@@ -40,7 +40,9 @@
 <body>
     <h1>🚂 Word Train Generator</h1>
     <form method="POST" id="train-form">
+    <div class="form-controls">
         <input type="text" name="word" placeholder="Enter word(s)" required autofocus>
+        
         <select name="engine">
             <option value="🚂">🚂 Classic</option>
             <option value="🚀">🚀 Rocket</option>
@@ -48,11 +50,16 @@
             <option value="🚌">🚌 Bus</option>
             <option value="🐍">🐍 Snake</option>
         </select>
-        <label for="speed">Speed:</label>
-        <input type="range" name="speed" min="5" max="30" value="{{ speed if speed else 12 }}">
+        
+        <div class="speed-control">
+            <label for="speed">Speed:</label>
+            <input type="range" id="speed" name="speed" min="5" max="30" value="{{ speed if speed else 12 }}">
+        </div>
+        
         <button type="submit">Generate Train</button>
         <button type="button" id="random-word-btn" class="generate-style">🎲 Random Word</button>
-    </form>
+    </div>
+</form>
 
     <div class="challenge">🎯 Try to match the challenge word: <strong>{{ challenge_word }}</strong></div>
 
@@ -235,45 +242,53 @@ document.getElementById('train-form').addEventListener('submit', function(e) {
     }
 
     // --- Update train visualization with new word ---
-    function updateTrainWithWord(word) {
-        console.log(`Updating train with word: "${word}"`);
-        definitionContainer.innerHTML = `<i>Loading definition for "${word}"...</i>`;
+    
+// In your updateTrainWithWord function:
+function updateTrainWithWord(word) {
+    console.log(`Updating train with word: "${word}"`);
+    definitionContainer.innerHTML = `<i>Loading definition for "${word}"...</i>`;
 
-        const formData = new FormData(form);
-        formData.set("word", word);
+    const formData = new FormData(form);
+    formData.set("word", word);
 
-        console.log("Starting AJAX fetch for train...");
-        fetch("/", { method: "POST", body: formData })
-            .then(response => {
-                console.log(`AJAX response status: ${response.status}`);
-                if (!response.ok) throw new Error(`AJAX POST failed with status ${response.status}`);
-                return response.text();
-            })
-            .then(html => {
-                console.log("AJAX HTML received. Parsing...");
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, "text/html");
-                const newOutput = doc.querySelector("#train-output-area");
+    console.log("Starting AJAX fetch for train...");
+    fetch("/", { method: "POST", body: formData })
+        .then(response => {
+            console.log(`AJAX response status: ${response.status}`);
+            if (!response.ok) throw new Error(`AJAX POST failed with status ${response.status}`);
+            return response.text();
+        })
+        .then(html => {
+            console.log("AJAX HTML received. Parsing...");
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            
+            // Update train output area
+            const newOutput = doc.querySelector("#train-output-area");
+            if (newOutput && outputArea) {
+                console.log("Replacing #train-output-area content.");
+                outputArea.innerHTML = newOutput.innerHTML;
+            }
+            
+            // Update challenge word
+            const newChallenge = doc.querySelector(".challenge strong");
+            const currentChallenge = document.querySelector(".challenge strong");
+            if (newChallenge && currentChallenge) {
+                console.log("Updating challenge word:", newChallenge.textContent);
+                currentChallenge.textContent = newChallenge.textContent;
+            }
 
-                if (newOutput && outputArea) {
-                    console.log("Replacing #train-output-area content.");
-                    outputArea.innerHTML = newOutput.innerHTML;
+            // Always update the definition after updating the train
+            updateDefinitionForWord(word);
 
-                    // Always update the definition after updating the train
-                    updateDefinitionForWord(word);
-
-                    // Re-trigger animation speed for new trains
-                    updateAnimationSpeed();
-                } else {
-                    console.error("Could not find #train-output-area in AJAX response or current page.");
-                }
-            })
-            .catch(error => {
-                console.error("Error during AJAX fetch/processing:", error);
-                definitionContainer.innerHTML = "Error loading new train. Please try again.";
-            });
-    }
-
+            // Re-trigger animation speed for new trains
+            updateAnimationSpeed();
+        })
+        .catch(error => {
+            console.error("Error during AJAX fetch/processing:", error);
+            definitionContainer.innerHTML = "Error loading new train. Please try again.";
+        });
+}
     // --- Update definition for a word ---
     function updateDefinitionForWord(word) {
         console.log(`Updating definition for: "${word}"`);

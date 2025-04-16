@@ -160,3 +160,41 @@ button.generate-style:hover {
     z-index: 0;
 }
 
+/* Form controls layout */
+.form-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+/* Speed control specific styling */
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 0;
+    padding: 0;
+}
+
+.speed-control label {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+    color: #333;
+}
+
+/* Override existing range input styles */
+input[type="range"] {
+    width: 120px;
+    margin: 0 5px;
+    padding: 0;
+    vertical-align: middle;
+}
+
+/* Ensure consistent button spacing */
+button {
+    margin: 0 5px;
+}

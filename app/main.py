@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template, session
 import random
-import os  # Add this import
+import os
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))
@@ -34,9 +34,14 @@ def generate_word_train(word, engine="🚂"):
 @app.route("/", methods=["GET", "POST"])
 def index():
     output = None
-    challenge_word = random.choice(["python", "emoji", "rocket", "train", "erwin"])
     message = ""
     speed = 12
+
+    # Generate new challenge word only on GET requests or if not in session
+    if request.method == "GET" or "challenge_word" not in session:
+        session["challenge_word"] = random.choice(["python", "emoji", "rocket", "train", "erwin"])
+    
+    challenge_word = session["challenge_word"]  # Get current challenge word
 
     if request.method == "POST":
         # Get and clean user input
@@ -47,13 +52,7 @@ def index():
         print(f"Raw form data: {dict(request.form)}")
         print(f"User word (raw): '{request.form.get('word', '')}'")
         print(f"User word (stripped): '{user_word}'")
-        print(f"Challenge word: '{challenge_word}'")
-        print(f"Length of user word: {len(user_word)}")
-        print(f"Length of challenge word: {len(challenge_word)}")
-        print(f"ASCII values of user word: {[ord(c) for c in user_word]}")
-        print(f"ASCII values of challenge word: {[ord(c) for c in challenge_word]}")
-        print(f"User word bytes: {user_word.encode('utf-8')}")
-        print(f"Challenge word bytes: {challenge_word.encode('utf-8')}")
+        print(f"Challenge word (from session): '{challenge_word}'")
         print("========================\n")
 
         engine = request.form.get("engine", "🚂")
@@ -67,20 +66,21 @@ def index():
             session.setdefault("history", [])
             session["history"].append(user_word)
 
-            # Normalize both strings for comparison
-            normalized_user_word = user_word.lower().strip()
-            normalized_challenge = challenge_word.lower().strip()
-            
-            print(f"Normalized user word: '{normalized_user_word}'")
-            print(f"Normalized challenge: '{normalized_challenge}'")
-            print(f"Do they match? {normalized_user_word == normalized_challenge}")
-
-            if normalized_user_word == normalized_challenge:
+            # Compare the words
+            if user_word.lower().strip() == challenge_word.lower():
                 message = "Nice! You matched the challenge! 🎉"
                 print("Match successful!")
             else:
                 message = "Try again! 🎯"
                 print("Match failed!")
+            
+            # Generate new challenge word after every attempt
+            new_challenge = random.choice(["python", "emoji", "rocket", "train", "erwin"])
+            # Make sure we don't get the same word twice
+            while new_challenge.lower() == challenge_word.lower():
+                new_challenge = random.choice(["python", "emoji", "rocket", "train", "erwin"])
+            session["challenge_word"] = new_challenge
+            challenge_word = new_challenge  # Update for this response
         else:
             message = "Please enter a word!"
             print("No input received")
