@@ -1,0 +1,162 @@
+body {
+    font-family: sans-serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+    overflow-x: hidden;
+}
+
+h1, h2 {
+    color: #333;
+    text-align: center;
+}
+
+form {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+input[type="text"], select, input[type="range"] {
+    padding: 8px;
+    margin: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 200px;
+}
+
+textarea {
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    width: 100%;
+    max-width: 400px;
+    font-size: 1em;
+    resize: none;
+}
+
+button[type="submit"], button.generate-style {
+    padding: 10px 20px;
+    background-color: #5cb85c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover,
+button.generate-style:hover {
+    background-color: #4cae4c;
+}
+
+.output {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.2em;
+    overflow: hidden;
+}
+
+.train-container {
+    position: relative;
+    width: 100%;
+    height: 80px;
+    margin-top: 20px;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.train-output {
+    display: inline-block;
+    white-space: nowrap;
+    animation: scrollTrain 12s linear infinite;
+    font-size: 1.5em;
+}
+
+@keyframes scrollTrain {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+.train-row {
+    display: flex;
+    justify-content: center;
+}
+
+.train-car {
+    display: inline-block;
+    text-align: center;
+    margin: 0 5px;
+    position: relative;
+}
+
+.car, .engine {
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+    display: inline-block;
+}
+
+.wheels-row {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    gap: 10px;
+}
+
+.wheel {
+    width: 15px;
+    height: 15px;
+    animation: spinCounter 2s linear infinite;
+}
+
+@keyframes spinCounter {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(-360deg); }
+}
+
+.rails {
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 10px;
+    z-index: 0;
+}
+
+.message {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #007bff;
+}
+
+.challenge {
+    text-align: center;
+    margin-bottom: 15px;
+    font-style: italic;
+    color: #888;
+}
+
+
+.train-block {
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.rails {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    z-index: 0;
+}
+
