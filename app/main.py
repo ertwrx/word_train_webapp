@@ -1,8 +1,9 @@
 from flask import Flask, request, render_template, session
 import random
+import os  # Add this import
 
 app = Flask(__name__)
-app.secret_key = 'secret'  # Required for session
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))
 
 def generate_word_train(word, engine="🚂"):
     """Generates a graphical word train representation with spinning SVG wheels."""
@@ -16,7 +17,7 @@ def generate_word_train(word, engine="🚂"):
     </svg>
     """
 
-    train = engine  # Start with the selected engine emoji
+    train = engine
     for i, char in enumerate(word):
         style = ""
         if i == 0:
@@ -27,37 +28,72 @@ def generate_word_train(word, engine="🚂"):
             style = f"<span style='font-size: 0.8em;'>-{char.lower()}-</span>"
         else:
             style = f"[{char.upper()}]"
-        # Add wheel after each letter
         train += style + wheel_svg
     return train
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     output = None
-    challenge_word = random.choice(["python", "flask", "emoji", "rocket", "train"])
+    challenge_word = random.choice(["python", "emoji", "rocket", "train", "erwin"])
     message = ""
-    speed = 12  # ✅ Default value always set first
+    speed = 12
 
     if request.method == "POST":
-        user_word = request.form["word"]
-        print(f"Received word: {user_word}")  # Log received word
+        # Get and clean user input
+        user_word = request.form.get("word", "").strip()
+        
+        # Debug prints
+        print("\n=== Debug Information ===")
+        print(f"Raw form data: {dict(request.form)}")
+        print(f"User word (raw): '{request.form.get('word', '')}'")
+        print(f"User word (stripped): '{user_word}'")
+        print(f"Challenge word: '{challenge_word}'")
+        print(f"Length of user word: {len(user_word)}")
+        print(f"Length of challenge word: {len(challenge_word)}")
+        print(f"ASCII values of user word: {[ord(c) for c in user_word]}")
+        print(f"ASCII values of challenge word: {[ord(c) for c in challenge_word]}")
+        print(f"User word bytes: {user_word.encode('utf-8')}")
+        print(f"Challenge word bytes: {challenge_word.encode('utf-8')}")
+        print("========================\n")
+
         engine = request.form.get("engine", "🚂")
-        speed = int(request.form.get("speed", 12))  # ✅ Override with user input
+        speed = int(request.form.get("speed", 12))
 
-        words = [w.strip() for w in user_word.splitlines() if w.strip()]
-        output = [generate_word_train(word, engine) for word in words]
+        if user_word:
+            # Generate train visualization
+            output = [generate_word_train(user_word, engine)]
+            
+            # Update session history
+            session.setdefault("history", [])
+            session["history"].append(user_word)
 
-        session.setdefault("history", [])
-        session["history"].append(user_word)
+            # Normalize both strings for comparison
+            normalized_user_word = user_word.lower().strip()
+            normalized_challenge = challenge_word.lower().strip()
+            
+            print(f"Normalized user word: '{normalized_user_word}'")
+            print(f"Normalized challenge: '{normalized_challenge}'")
+            print(f"Do they match? {normalized_user_word == normalized_challenge}")
 
-        if user_word.lower() == challenge_word.lower():
-            message = "Nice! You matched the challenge!"
+            if normalized_user_word == normalized_challenge:
+                message = "Nice! You matched the challenge! 🎉"
+                print("Match successful!")
+            else:
+                message = "Try again! 🎯"
+                print("Match failed!")
         else:
-            message = "Try again!"
+            message = "Please enter a word!"
+            print("No input received")
 
-    return render_template("index.html", output=output, message=message, challenge_word=challenge_word, speed=speed)
-
-
+    return render_template(
+        "index.html",
+        output=output,
+        message=message,
+        challenge_word=challenge_word,
+        speed=speed
+    )
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
+    host = os.environ.get('FLASK_HOST', '127.0.0.1')
+    app.run(debug=debug_mode, host=host)

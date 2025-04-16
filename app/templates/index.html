@@ -95,104 +95,249 @@
     <div class="definition-container" id="definition-area">Enter a word to see its definition!</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOMContentLoaded event fired."); // Log when script starts after load
 
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOMContentLoaded event fired.");
+
+    // Cache DOM elements once at the beginning
     const slider = document.querySelector('input[name="speed"]');
     const inputField = document.querySelector('input[name="word"]');
     const randomButton = document.getElementById('random-word-btn');
     const form = document.getElementById('train-form');
     const definitionContainer = document.getElementById('definition-area');
+    const outputArea = document.getElementById('train-output-area');
 
+    // Guard clause for critical elements
     if (!definitionContainer) {
         console.error("ERROR: Definition container not found!");
-        return; // Stop if critical element is missing
+        return;
     }
     console.log("Definition container found:", definitionContainer);
 
-    // --- Speed slider ---
-    slider.addEventListener('input', () => {
-        // ... (slider code remains the same) ...
-    });
+    // --- Speed slider handler ---
+    function updateAnimationSpeed() {
+        const speed = parseInt(slider.value);
+        // Reverse the speed value (so right is slow, left is fast)
+        const reversedSpeed = 35 - speed; // Using 35 as max since slider goes from 5-30
 
-    // --- Enter key submit ---
+        const trains = document.querySelectorAll('.train-output');
+        trains.forEach(train => {
+            train.style.animationDuration = reversedSpeed + 's';
+            console.log(`Animation speed set to ${reversedSpeed}s`);
+        });
+    }
+
+    slider.addEventListener('input', updateAnimationSpeed);
+
+    // Initialize speed on page load
+    updateAnimationSpeed();
+
+    // --- Enter key handler ---
     inputField.addEventListener('keydown', function (event) {
-       // ... (keydown code remains the same) ...
+       if (event.key === "Enter") {
+            event.preventDefault();
+            handleWordSubmission(inputField.value.trim());
+        }
     });
 
-    // --- FORM SUBMIT (causes page reload) ---
-    form.addEventListener('submit', function() {
-        const wordToSubmit = inputField.value.trim();
-        console.log("Form submitted. Saving to localStorage:", wordToSubmit); // Log before reload
-        localStorage.setItem('lastWord', wordToSubmit);
-        // Allow normal POST submission and page reload
+// Add this debug code right before the form submission in your JavaScript
+document.getElementById('train-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const wordInput = document.querySelector('input[name="word"]');
+    const word = wordInput.value;
+    
+    console.log('Form submission debug:');
+    console.log('Raw input value:', word);
+    console.log('Input value length:', word.length);
+    console.log('ASCII values:', Array.from(word).map(c => c.charCodeAt(0)));
+    console.log('Trimmed value:', word.trim());
+    console.log('Trimmed length:', word.trim().length);
+    
+    // Continue with your existing form submission logic
+    handleWordSubmission(word.trim());
+});
+
+    // --- Form submit handler (prevent reload) ---
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent page reload
+        handleWordSubmission(inputField.value.trim());
     });
 
-    // --- AFTER PAGE LOAD ---
-    const lastWord = localStorage.getItem('lastWord');
-    console.log("After page load, retrieved from localStorage:", lastWord); // Log word retrieved
+    // --- Confetti function for Erwin Easter Egg ---
+    function createConfetti() {
+        const confettiContainer = document.createElement('div');
+        confettiContainer.style.position = 'fixed';
+        confettiContainer.style.top = '0';
+        confettiContainer.style.left = '0';
+        confettiContainer.style.width = '100%';
+        confettiContainer.style.height = '100%';
+        confettiContainer.style.pointerEvents = 'none';
+        confettiContainer.style.zIndex = '1000';
+        document.body.appendChild(confettiContainer);
 
-    if (lastWord && definitionContainer) {
-        console.log(`Attempting to get definition for "${lastWord}" on page load.`); // Log before fetch
-        definitionContainer.innerHTML = `<i>Loading definition for "${lastWord}"...</i>`;
-        getDefinition(lastWord)
-            .then(definition => {
-                console.log(`Definition received for "${lastWord}":`, definition); // Log definition received
-                 // Double-check container exists before updating
-                const currentDefinitionContainer = document.getElementById('definition-area');
-                if (currentDefinitionContainer) {
-                     console.log("Updating definition container HTML."); // Log before update
-                     currentDefinitionContainer.innerHTML = definition;
+        // Create 100 confetti pieces
+        for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement('div');
+            
+            // Randomize confetti appearance
+            const size = Math.random() * 10 + 5; // 5-15px
+            const colors = ['#f94144', '#f3722c', '#f8961e', '#f9c74f', '#90be6d', '#43aa8b', '#577590', '#FF5733', '#33FFBD', '#336BFF'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            confetti.style.position = 'absolute';
+            confetti.style.width = size + 'px';
+            confetti.style.height = size + 'px';
+            confetti.style.backgroundColor = color;
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.top = '-20px';
+            confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+            confetti.style.opacity = Math.random() + 0.5; // 0.5-1.5
+            
+            // Add animation
+            confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
+            
+            confettiContainer.appendChild(confetti);
+        }
+
+        // Add keyframe animation for falling effect
+        const styleSheet = document.createElement('style');
+        styleSheet.innerHTML = `
+            @keyframes fall {
+                to {
+                    transform: translateY(100vh) rotate(${Math.random() * 360}deg);
+                }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+
+        // Remove confetti after animation completes
+        setTimeout(() => {
+            confettiContainer.remove();
+            styleSheet.remove();
+        }, 5000);
+    }
+
+    // --- Unified word submission handler ---
+    function handleWordSubmission(word) {
+        if (!word) return;
+
+        console.log("Handling word submission for:", word);
+        localStorage.setItem('lastWord', word);
+
+        // Check for Erwin Easter Egg
+        if (word.toLowerCase() === "erwin") {
+            createConfetti();
+        }
+
+        showPopup();
+        updateTrainWithWord(word);
+    }
+
+    // --- Update train visualization with new word ---
+    function updateTrainWithWord(word) {
+        console.log(`Updating train with word: "${word}"`);
+        definitionContainer.innerHTML = `<i>Loading definition for "${word}"...</i>`;
+
+        const formData = new FormData(form);
+        formData.set("word", word);
+
+        console.log("Starting AJAX fetch for train...");
+        fetch("/", { method: "POST", body: formData })
+            .then(response => {
+                console.log(`AJAX response status: ${response.status}`);
+                if (!response.ok) throw new Error(`AJAX POST failed with status ${response.status}`);
+                return response.text();
+            })
+            .then(html => {
+                console.log("AJAX HTML received. Parsing...");
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, "text/html");
+                const newOutput = doc.querySelector("#train-output-area");
+
+                if (newOutput && outputArea) {
+                    console.log("Replacing #train-output-area content.");
+                    outputArea.innerHTML = newOutput.innerHTML;
+
+                    // Always update the definition after updating the train
+                    updateDefinitionForWord(word);
+
+                    // Re-trigger animation speed for new trains
+                    updateAnimationSpeed();
                 } else {
-                     console.error("Definition container disappeared before update!");
+                    console.error("Could not find #train-output-area in AJAX response or current page.");
                 }
             })
             .catch(error => {
-                // Catch errors specifically from the getDefinition promise
-                console.error(`Error fetching definition for "${lastWord}" on page load:`, error);
-                if (definitionContainer) {
-                     definitionContainer.innerHTML = `Failed to load definition for "${lastWord}".`;
-                }
+                console.error("Error during AJAX fetch/processing:", error);
+                definitionContainer.innerHTML = "Error loading new train. Please try again.";
             });
-    } else if (definitionContainer) {
-        console.log("No lastWord found in localStorage, setting default message."); // Log default case
-        definitionContainer.innerHTML = "Enter a word to see its definition!";
-    } else {
-        console.log("No lastWord in localStorage AND definition container missing.");
     }
 
+    // --- Update definition for a word ---
+    function updateDefinitionForWord(word) {
+        console.log(`Updating definition for: "${word}"`);
+        getDefinition(word)
+            .then(definition => {
+                console.log(`Definition received for "${word}":`, definition);
+                definitionContainer.innerHTML = definition;
+            })
+            .catch(error => {
+                console.error(`Error fetching definition for "${word}":`, error);
+                definitionContainer.innerHTML = `Failed to load definition for "${word}".`;
+            });
+    }
 
-    // --- Random word generator function (async generateRandomWord) ---
+    // --- Random word generator function ---
     async function generateRandomWord() {
-        // ... (keep existing function code) ...
-         try {
+        try {
             const response = await fetch('https://random-word-api.herokuapp.com/word');
-            // console.log("Fetch response:", response); // Optional: less noisy
             if (!response.ok) throw new Error(`Network response was not ok (${response.status})`);
             const data = await response.json();
             if (!data || !data[0]) throw new Error("Invalid data received from random word API");
             console.log("Received random word:", data[0]);
-            return data[0];
+            return {
+                word: data[0],
+                isFromAPI: true
+            };
         } catch (error) {
             console.error("Random Word Fetch error:", error);
-const fallbackWords = ["You are enough", "You can do it", "Stay in peace", "Feel the joy", "Keep your hope", "Trust your path", "Love is here", "Dream without fear", "Shine your light", "Make it happen", "You are valued", "Keep moving forward", "Stay strong now", "Be truly brave", "Embrace the calm"];            
-const randomWord = fallbackWords[Math.floor(Math.random() * fallbackWords.length)];
+            const fallbackWords = ["You are enough", "You can do it", "Stay in peace", "Feel the joy", "Keep your hope", "Trust your path", "Love is here", "Dream without fear", "Shine your light", "Make it happen", "You are valued", "Keep moving forward", "Stay strong now", "Be truly brave", "Embrace the calm"];
+            const randomWord = fallbackWords[Math.floor(Math.random() * fallbackWords.length)];
             console.log("Using fallback word:", randomWord);
-            return randomWord;
+            return {
+                word: randomWord,
+                isFromAPI: false
+            };
         }
     }
 
-    // --- Dictionary API function (async getDefinition) ---
- // --- Dictionary API function (async getDefinition) ---
+    // --- Dictionary API function (with special cases handling) ---
     async function getDefinition(word) {
         console.log(`Inside getDefinition, looking up: "${word}"`);
-        try {
-            if (!word) return "Enter a word to see its definition!"; // Handles empty input early
 
+        if (!word) return "Enter a word to see its definition!"; // Handle empty input early
+
+        // Special case checks - ERWIN added
+        const lowerWord = word.toLowerCase().replace(/\s+/g, '');
+        
+        // Special case for Erwin
+        if (lowerWord === "erwin") {
+            console.log("Special case detected: Erwin");
+            return `<span style="font-style: italic; font-weight: bold; color: #9b59b6; font-size: 1.2em; font-family: 'Arial', sans-serif;">This guy's idea was so good, even ChatGPT had to sit down and take notes. 📝🤖🔥</span>`;
+        }
+        
+        // Special case for Jesus/Christ
+        if (lowerWord.includes('jesus') || lowerWord.includes('christ')) {
+            console.log("Special case detected: Jesus/Christ");
+            return `<span style="font-style: italic; font-weight: bold; color: #e74c3c; font-size: 1.2em; font-family: 'Georgia', serif;">My Lord, My God, My Savior!! All Glory to God in the highest!!! 🙌</span>`;
+        }
+
+        try {
             const cleanWord = word.split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '');
             if (!cleanWord) {
                 console.log(`Cleaned word is empty for input: "${word}"`);
-                return "Maybe try entering... you know... actual letters? 😉"; // Funny fallback for invalid input
+                return "Maybe try entering... you know... actual letters? 😉";
             }
             console.log(`Cleaned word for API call: "${cleanWord}"`);
 
@@ -201,8 +346,7 @@ const randomWord = fallbackWords[Math.floor(Math.random() * fallbackWords.length
 
             // --- CASE 1: API Responded, but Word Not Found (or other API error) ---
             if (!response.ok) {
-                 // Keep your existing funny list for "word not found"
-                 const wordNotFoundResponses = [
+                const wordNotFoundResponses = [
                     `"${word}"? I looked everywhere but couldn't find this word! 🕵️‍♂️`,
                     `Ah! Do you speak the language of the ancients? "${word}" is a mystery to me! 🧙‍♂️`,
                     `Hmm, "${word}" sounds made up. But then again, aren't all words? 🤔`,
@@ -212,7 +356,6 @@ const randomWord = fallbackWords[Math.floor(Math.random() * fallbackWords.length
                     `Is "${word}" even legal in Scrabble? Doesn't look like it's in my dictionary!`
                 ];
                 console.warn(`Dictionary API non-OK response for "${cleanWord}": ${response.status}.`);
-                // Select a random response from this list
                 return wordNotFoundResponses[Math.floor(Math.random() * wordNotFoundResponses.length)];
             }
 
@@ -226,23 +369,17 @@ const randomWord = fallbackWords[Math.floor(Math.random() * fallbackWords.length
                 console.log(`Successfully found definition for "${cleanWord}"`);
                 return `<strong>${cleanWord}</strong> <em>(${partOfSpeech})</em>: ${definition}`;
             } else {
-                // This case means API gave 200 OK, but data structure was unexpected/empty
                 console.warn(`Found "${cleanWord}" but structure missing meanings/definitions. Data:`, data);
-                 // Add a funny fallback here too, if you like
-                 const weirdDataResponses = [
-                     `Found "${cleanWord}" but the definition seems to have wandered off... 🚶‍♂️`,
-                     `The entry for "${cleanWord}" exists, but it's written in invisible ink! ✨`,
-                     `"${cleanWord}" is in the dictionary, but the definition is playing hide-and-seek! 🙈`
-                 ];
+                const weirdDataResponses = [
+                    `Found "${cleanWord}" but the definition seems to have wandered off... 🚶‍♂️`,
+                    `The entry for "${cleanWord}" exists, but it's written in invisible ink! ✨`,
+                    `"${cleanWord}" is in the dictionary, but the definition is playing hide-and-seek! 🙈`
+                ];
                 return weirdDataResponses[Math.floor(Math.random() * weirdDataResponses.length)];
             }
-
-        // --- CASE 3: Failed to Fetch (Network error, API down, CORS, etc.) ---
         } catch (error) {
-            console.error(`General error in getDefinition for "${word}":`, error); // Keep logging the real error for debugging
-
-             // NEW funny list for connection/fetch errors
-             const connectionErrorResponses = [
+            console.error(`General error in getDefinition for "${word}":`, error);
+            const connectionErrorResponses = [
                 `Is the dictionary API napping? 😴 Couldn't get a definition for "${word}".`,
                 `My wires must be crossed! ⚡️ Failed to look up "${word}". Try again?`,
                 `The definition gnomes are on strike! ✊ Couldn't fetch "${word}".`,
@@ -251,27 +388,27 @@ const randomWord = fallbackWords[Math.floor(Math.random() * fallbackWords.length
                 `Whoops! Dropped the dictionary while looking up "${word}". 📚 Try again!`,
                 `Static electricity? Gremlins? 👾 Couldn't connect to fetch "${word}".`,
                 `Does the internet exist right now? 🤔 Couldn't reach the dictionary for "${word}".`
-             ];
-            // Select a random response from this new list
+            ];
             return connectionErrorResponses[Math.floor(Math.random() * connectionErrorResponses.length)];
         }
     }
-    // --- AJAX FOR RANDOM WORD ---
+
+    // --- Random word button handler ---
     randomButton.addEventListener('click', async () => {
         console.log("Random Word button clicked.");
         showPopup();
-        if (definitionContainer) {
-            definitionContainer.innerHTML = "<i>Generating random word...</i>";
-        }
+        definitionContainer.innerHTML = "<i>Generating random word...</i>";
 
-        const randomWord = await generateRandomWord();
-        console.log(`Generated random word: "${randomWord}". Storing to localStorage.`);
-        localStorage.setItem('lastWord', randomWord); // Also store random word
+        const randomWordResult = await generateRandomWord();
+        console.log(`Generated random word: "${randomWordResult.word}", from API: ${randomWordResult.isFromAPI}`);
+        inputField.value = randomWordResult.word;
+        inputField.focus();
 
+        // Update the train visualization
         const formData = new FormData(form);
-        formData.set("word", randomWord);
+        formData.set("word", randomWordResult.word);
 
-        console.log("Starting AJAX fetch for random word train...");
+        console.log("Starting AJAX fetch for train...");
         fetch("/", { method: "POST", body: formData })
             .then(response => {
                 console.log(`AJAX response status: ${response.status}`);
@@ -283,52 +420,83 @@ const randomWord = fallbackWords[Math.floor(Math.random() * fallbackWords.length
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(html, "text/html");
                 const newOutput = doc.querySelector("#train-output-area");
-                const currentOutputArea = document.querySelector("#train-output-area");
 
-                if (newOutput && currentOutputArea) {
+                if (newOutput && outputArea) {
                     console.log("Replacing #train-output-area content.");
-                    currentOutputArea.innerHTML = newOutput.innerHTML;
+                    outputArea.innerHTML = newOutput.innerHTML;
 
-                    // Now update definition for the *random* word
-                    const currentDefinitionContainer = document.getElementById('definition-area'); // Re-select after potential DOM change
-                    if (currentDefinitionContainer) {
-                         console.log(`Attempting AJAX definition fetch for "${randomWord}"`);
-                         currentDefinitionContainer.innerHTML = `<i>Loading definition for "${randomWord}"...</i>`;
-                         getDefinition(randomWord).then(definition => {
-                            console.log(`AJAX definition received for "${randomWord}"`);
-                             if(currentDefinitionContainer) { // Check again
-                                currentDefinitionContainer.innerHTML = definition;
-                             }
-                         }).catch(error => {
-                              console.error(`Error fetching definition for "${randomWord}" via AJAX:`, error);
-                              if (currentDefinitionContainer) {
-                                   currentDefinitionContainer.innerHTML = `Failed to load definition for "${randomWord}".`;
-                              }
-                         });
+                    // Only update definition if the word came from the API
+                    if (randomWordResult.isFromAPI) {
+                        console.log("Word from API, updating definition");
+                        updateDefinitionForWord(randomWordResult.word);
+                        // Save to localStorage only if it's a real word
+                        localStorage.setItem('lastWord', randomWordResult.word);
                     } else {
-                         console.error("Definition container not found after AJAX update!");
+                        console.log("Word NOT from API, showing motivational message instead");
+                        definitionContainer.innerHTML = `<span style="font-style: italic; color: #3498db; font-weight: bold;">Random word API is unavailable, maybe it's your internet. Anyways, enjoy the motivational message. Go out and get some sunlight.✨</span>`;
+                        // Don't save fallback messages to localStorage
                     }
-                } else {
-                     console.error("Could not find #train-output-area in AJAX response or current page.");
-                }
 
-                inputField.value = randomWord;
-                inputField.focus();
-                console.log("AJAX update complete.");
+                    // Re-trigger animation speed for new trains
+                    updateAnimationSpeed();
+                } else {
+                    console.error("Could not find #train-output-area in AJAX response or current page.");
+                }
             })
             .catch(error => {
-                 console.error("Error during AJAX fetch/processing:", error);
-                 // Optionally display error to user
-                 if(definitionContainer) definitionContainer.innerHTML = "Error loading new train.";
+                console.error("Error during AJAX fetch/processing:", error);
+                definitionContainer.innerHTML = "Error loading new train. Please try again.";
             });
     });
 
+    // --- Initial load handling ---
+    const lastWord = localStorage.getItem('lastWord');
+    console.log("After page load, retrieved from localStorage:", lastWord);
+
+    if (lastWord) {
+        console.log(`Loading last used word: "${lastWord}"`);
+        updateDefinitionForWord(lastWord);
+    } else {
+        definitionContainer.innerHTML = "Enter a word to see its definition!";
+    }
 }); // End DOMContentLoaded
 
-
-// --- Popup function (showPopup) ---
+// --- Popup function (unchanged) ---
 function showPopup() {
-    // ... (keep existing function code) ...
+    const messages = [
+        "Is it time for the train yet? ⏰",
+        "Hop on the word train! 🚂",
+        "Wheels are spinning! 🔄",
+        "Fasten your seatbelts, it's going to be a fun ride! 🎢",
+    ];
+
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+
+    const popup = document.createElement("div");
+    popup.textContent = randomMessage;
+    popup.style.position = "fixed";
+    popup.style.bottom = "20px";
+    popup.style.left = "50%";
+    popup.style.transform = "translateX(-50%)";
+    popup.style.backgroundColor = "#ffc";
+    popup.style.border = "1px solid #cc9";
+    popup.style.padding = "10px 20px";
+    popup.style.borderRadius = "8px";
+    popup.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
+    popup.style.fontSize = "1.1em";
+    popup.style.fontWeight = "bold";
+    popup.style.zIndex = "1000";
+    popup.style.opacity = "1";
+
+    document.body.appendChild(popup);
+
+    setTimeout(() => {
+        popup.style.transition = "opacity 0.9s ease";
+        popup.style.opacity = "0";
+        setTimeout(() => {
+            popup.remove();
+        }, 1000);
+    }, 1500);
 }
 </script>
 </body>
