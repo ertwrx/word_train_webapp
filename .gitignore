@@ -1,1 +1,5 @@
 *.bak
+
+# Backup scripts
+bac
+restorbac
