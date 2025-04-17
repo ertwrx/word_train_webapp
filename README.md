@@ -6,12 +6,12 @@ A fun web app that generates word trains with graphical representations. Input a
 
 ## Demo
 <!-- Put your screenshot in the root folder and uncomment the line below after uploading -->
-![App Screenshot](screenshot.png)
+<img src="screenshot.png" alt="App Screenshot" width="300"/>
 
 ## Features
 
 - **Word Train Generator:** Visualize words as animated trains.
-- **Affirmations:** Get a random positive word with one click.
+- **Random Words:** Get a random word with one click.
 - **Speed Control:** Adjust train animation speed.
 - **Train Theme Selection:** Choose your favorite engine (🚂, 🚀, 🛸, 🚌, etc.).
 - **Challenge Word:** Try to match the random challenge word.
