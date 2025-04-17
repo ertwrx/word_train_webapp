@@ -1,65 +1,86 @@
 # Word Train Webapp 🚂
 
-A fun web app that generates word trains with graphical representations. This app allows users to input words and see them transformed into a train, with each letter represented by a "train car" (styled as spinning wheels). Users can select the train's speed, choose a theme (engine), and even get a random word generated from an affirmation API!
+A fun web app that generates word trains with graphical representations. Input any word and watch each letter become a train car—with customizable engines, affirmations, and interactive features!
+
+## Demo
+<!-- Optionally add a screenshot or GIF -->
+[Demo Screenshot](Screenshot 2025-04-18 001238.png)
 
 ## Features
 
-- **Word Train Generator:** Converts any inputted word(s) into a visual train with spinning wheels
-- **Affirmations:** Click the "Random Word" button to generate a random affirmation
-- **Speed Control:** Adjust the speed of the train with a slider
-- **Train Theme Selection:** Choose between different "engines" like 🚂, 🚀, 🛸, 🚌, and more!
-- **Challenge Word:** Match a random challenge word for a fun challenge
+- **Word Train Generator:** Visualize words as animated trains.
+- **Affirmations:** Get a random positive word with one click.
+- **Speed Control:** Adjust train animation speed.
+- **Train Theme Selection:** Choose your favorite engine (🚂, 🚀, 🛸, 🚌, etc.).
+- **Challenge Word:** Try to match the random challenge word.
 
 ## Installation
 
-1. Clone this repository to your local machine:
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/ertwrx/word_train_webapp.git
+   cd word_train_webapp
+   ```
+
+2. (Optional) Set up a virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. Add a `.env` file. Example:
+   ```
+   SECRET_KEY=your_secret_key
+   OTHER_CONFIG=...
+   ```
+
+5. Run the app:
+   ```bash
+   python app/main.py
+   ```
+   Visit [http://localhost:5000](http://localhost:5000)
+
+## Docker Usage
+
+Build and run the app with Docker:
 ```bash
-git clone https://github.com/ertwrx/word_train_webapp.git
-cd word_train_webapp
+docker build -t word-train-webapp .
+docker run -p 5000:5000 word-train-webapp
 ```
 
-2. Set up a virtual environment (optional but recommended):
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
+## API Endpoints
 
-3. Install the required dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-4. Run the Flask app:
-```bash
-python app/main.py
-```
-
-Your app should now be running at http://localhost:5000/ or http://127.0.0.1:5000/.
-
-## How it Works
-
-The application works through several key components:
-
-1. The user inputs words into the text box and can adjust the speed and select a train engine.
-2. Clicking the "Generate Train" button generates a visual representation of the word train, with each letter appearing as a "train car" with a spinning wheel SVG.
-3. The "Random Word" button fetches an affirmation from the affirmations API and generates a random word train based on that word.
-4. The app includes a challenge feature where users try to match the challenge word, and feedback is provided based on whether the input matches the challenge word.
+- `/` : Main page (input words, see trains)
+- `/random-word` : Get a random affirmation
+- `/challenge` : Get/set challenge word
 
 ## Technologies Used
 
 - **Backend:** Flask (Python)
 - **Frontend:** HTML, CSS, JavaScript (AJAX)
-- **SVG:** Used for graphical representation of wheels
+- **SVG:** Animated wheels
+
+## Troubleshooting
+
+- **Port in use?** Change the port in `main.py` or stop the conflicting process.
+- **Missing dependencies?** Double-check your Python version and run `pip install -r requirements.txt`.
 
 ## Contributing
 
-1. Fork the repository
+1. Fork the repo
 2. Create a new branch (`git checkout -b feature-name`)
-3. Make your changes
-4. Commit your changes (`git commit -am 'Add new feature'`)
-5. Push to your branch (`git push origin feature-name`)
-6. Create a new pull request
+3. Commit and push your changes
+4. Open a pull request
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+MIT License. See [LICENSE](LICENSE).
+
+---
+
+[View source on GitHub](https://github.com/ertwrx/word_train_webapp)
