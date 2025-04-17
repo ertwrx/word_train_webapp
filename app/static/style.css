@@ -336,8 +336,14 @@ button.generate-style:active {
 
 /* Train Block and Rails */
 .train-block {
-    position: relative;
-    margin-bottom: 40px;
+  position: relative;
+  z-index: 1;
+  /* Add a nice SVG background image for mountains and trees */
+  background-image: url('data:image/svg+xml;utf8,<svg width="800" height="120" viewBox="0 0 800 120" xmlns="http://www.w3.org/2000/svg"><polygon points="0,120 80,60 160,120" fill="%2396b3a0"/><polygon points="120,120 200,70 280,120" fill="%237e9e87"/><polygon points="240,120 340,50 440,120" fill="%23a8c4b0"/><polygon points="400,120 500,90 600,120" fill="%238aa08d"/><rect x="70" y="100" width="10" height="20" fill="%236b4e2a"/><circle cx="75" cy="100" r="15" fill="%234caf50"/><rect x="210" y="105" width="8" height="15" fill="%236b4e2a"/><circle cx="214" cy="105" r="10" fill="%23388e3c"/><rect x="330" y="105" width="10" height="15" fill="%236b4e2a"/><circle cx="335" cy="105" r="12" fill="%23388e3c"/></svg>');
+  background-repeat: no-repeat;
+  background-size: 100% 120px;
+  background-position: bottom;
+  /* If your train block already has a background color, you can keep it or set it to transparent */
 }
 
 .rails {
@@ -415,4 +421,15 @@ select {
     padding-right: 30px;
 }
 
-/* Rest of the CSS remains the same */
+.train-bg {
+  width: 100%;
+  height: 130px;
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  margin-bottom: -40px; /* so train appears to stand on ground */
+}
+.train-block {
+  position: relative;
+  z-index: 1;
+}
