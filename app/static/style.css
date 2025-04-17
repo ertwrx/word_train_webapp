@@ -173,22 +173,58 @@ button.generate-style:active {
 .train-with-wheels {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 5px;
+  align-items: flex-end;
+  gap: 8px;
+  animation: scrollTrain 8s linear infinite;
+  width: fit-content;
+  position: relative;
 }
 
 .train-car {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 44px;
+  margin: 0 2px;
+  position: relative;
+  height: 58px;
+  justify-content: flex-end;
+  border-radius: 8px 8px 10px 10px;
+  box-shadow: 1px 2px 4px rgba(60,60,60,0.08);
+  border: 2px solid #8884;
+}
+
+.train-car.engine {
+  background: linear-gradient(180deg, #f8c471 70%, #e67e22 100%);
+  border: 2px solid #b35410;
+  border-radius: 12px 12px 10px 10px;
+  box-shadow: 0 2px 8px #e67e2233;
+}
+
+.train-car.coach {
+  background: linear-gradient(180deg, #5dade2 80%, #2980b9 100%);
+  border: 2px solid #145a8c;
+  border-radius: 8px 8px 10px 10px;
+  box-shadow: 0 1px 4px #2980b933;
 }
 
 .train-letter {
-  font-size: 2em;
-  margin-bottom: 3px;
+  font-size: 1.7em;
+  color: #fff;
+  font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+  margin: 6px 0 0 0;
+  text-shadow: 1px 1px 2px rgba(32,32,32,0.2);
+  z-index: 2;
 }
-
+.window {
+  width: 15px;
+  height: 11px;
+  background: #fff;
+  border-radius: 3px 3px 6px 6px;
+  margin: 4px 0 2px 0;
+  box-shadow: 0 1px 2px #8883;
+  z-index: 1;
+}
 
 .train-output {
     display: inline-block;
@@ -199,22 +235,23 @@ button.generate-style:active {
 
 /* Wheels Styles */
 
-
 .wheel {
-  width: 20px;
-  height: 20px;
-  animation: spinCounter linear infinite;
+  width: 50px;
+  height: 50px;
+  animation: spinCounter 1s linear infinite;
+  margin-top: 1px;
 }
+
 
 /* Animation Keyframes */
 @keyframes scrollTrain {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
+  0% { transform: translateX(100vw); }
+  100% { transform: translateX(-100%); }
 }
 
 @keyframes spinCounter {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(-360deg); }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
 }
 
 /* Train Block and Rails */

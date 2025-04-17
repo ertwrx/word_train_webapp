@@ -73,7 +73,7 @@ def index():
         speed = int(request.form.get("speed", 12))
 
         if user_word:
-            output = [generate_word_train(user_word, engine)]
+            output = [engine + user_word]
             
             session.setdefault("history", [])
             session["history"].append(user_word)
