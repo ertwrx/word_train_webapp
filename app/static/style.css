@@ -198,16 +198,7 @@ button.generate-style:active {
 }
 
 /* Wheels Styles */
-.wheels-row {
-    display: flex;
-    justify-content: space-evenly;
-    margin-top: -5px;
-    gap: 10px;
-    position: absolute;
-    bottom: -15px;
-    left: 0;
-    right: 0;
-}
+
 
 .wheel {
   width: 20px;
