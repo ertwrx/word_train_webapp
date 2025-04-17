@@ -4,7 +4,7 @@ A fun web app that generates word trains with graphical representations. Input a
 
 ## Demo
 <!-- Optionally add a screenshot or GIF -->
-![Demo Screenshot](Screenshot 2025-04-18 001238.png)
+![Demo Screenshot](screenshot.png)
 
 ## Features
 
