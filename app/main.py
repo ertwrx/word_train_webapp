@@ -1,9 +1,25 @@
+import os
+import sys
+
+# Add the project root directory to Python path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_root)
+
 from flask import Flask, request, render_template, session
 import random
-import os
+import logging
+from config import Config
+import click
 
+# Rest of your code remains the same...
+
+# Initialize Flask application
 app = Flask(__name__)
-app.secret_key = os.environ.get('FLASK_SECRET_KEY', os.urandom(24))
+app.config.from_object(Config)
+Config.init_app(app)
+
+# Setup logger for this module
+logger = logging.getLogger(__name__)
 
 def generate_word_train(word, engine="🚂"):
     """Generates a graphical word train representation with spinning SVG wheels."""
@@ -37,53 +53,46 @@ def index():
     message = ""
     speed = 12
 
-    # Generate new challenge word only on GET requests or if not in session
     if request.method == "GET" or "challenge_word" not in session:
         session["challenge_word"] = random.choice(["python", "emoji", "rocket", "train", "erwin"])
     
-    challenge_word = session["challenge_word"]  # Get current challenge word
+    challenge_word = session["challenge_word"]
 
     if request.method == "POST":
         # Get and clean user input
         user_word = request.form.get("word", "").strip()
         
-        # Debug prints
-        print("\n=== Debug Information ===")
-        print(f"Raw form data: {dict(request.form)}")
-        print(f"User word (raw): '{request.form.get('word', '')}'")
-        print(f"User word (stripped): '{user_word}'")
-        print(f"Challenge word (from session): '{challenge_word}'")
-        print("========================\n")
+        # Debug logging (replacing print statements)
+        logger.debug("=== Debug Information ===")
+        logger.debug(f"Raw form data: {dict(request.form)}")
+        logger.debug(f"User word (raw): '{request.form.get('word', '')}'")
+        logger.debug(f"User word (stripped): '{user_word}'")
+        logger.debug(f"Challenge word (from session): '{challenge_word}'")
 
         engine = request.form.get("engine", "🚂")
         speed = int(request.form.get("speed", 12))
 
         if user_word:
-            # Generate train visualization
             output = [generate_word_train(user_word, engine)]
             
-            # Update session history
             session.setdefault("history", [])
             session["history"].append(user_word)
 
-            # Compare the words
             if user_word.lower().strip() == challenge_word.lower():
                 message = "Nice! You matched the challenge! 🎉"
-                print("Match successful!")
+                logger.info(f"Match successful for user word: {user_word}")
             else:
                 message = "Try again! 🎯"
-                print("Match failed!")
+                logger.info(f"Match failed for user word: {user_word}")
             
-            # Generate new challenge word after every attempt
             new_challenge = random.choice(["python", "emoji", "rocket", "train", "erwin"])
-            # Make sure we don't get the same word twice
             while new_challenge.lower() == challenge_word.lower():
                 new_challenge = random.choice(["python", "emoji", "rocket", "train", "erwin"])
             session["challenge_word"] = new_challenge
-            challenge_word = new_challenge  # Update for this response
+            challenge_word = new_challenge
         else:
             message = "Please enter a word!"
-            print("No input received")
+            logger.warning("Empty word submission received")
 
     return render_template(
         "index.html",
@@ -93,7 +102,24 @@ def index():
         speed=speed
     )
 
+# CLI commands for admin tasks
+@app.cli.command("clear-sessions")
+def clear_sessions_command():
+    """Clear all session data."""
+    session.clear()
+    logger.info("All sessions cleared")
+    click.echo('All sessions have been cleared.')
+
+@app.cli.command("list-words")
+def list_words_command():
+    """List all challenge words available."""
+    words = ["python", "emoji", "rocket", "train", "erwin"]
+    click.echo('Available challenge words:')
+    for word in words:
+        click.echo(f"- {word}")
+
 if __name__ == "__main__":
-    debug_mode = os.environ.get('FLASK_DEBUG', 'True').lower() == 'true'
-    host = os.environ.get('FLASK_HOST', '127.0.0.1')
-    app.run(debug=debug_mode, host=host)
+    app.run(
+        debug=Config.DEBUG,
+        host=Config.HOST
+    )
