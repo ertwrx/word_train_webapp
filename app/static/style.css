@@ -3,6 +3,7 @@ body {
     margin: 20px;
     background-color: #f4f4f4;
     overflow-x: hidden;
+    padding-bottom: 50px; /* For definition container */
 }
 
 h1, h2 {
@@ -19,12 +20,58 @@ form {
     text-align: center;
 }
 
-input[type="text"], select, input[type="range"] {
-    padding: 8px;
-    margin: 5px 10px;
+/* Form Controls Layout */
+.form-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin: 15px 0;
+    width: 100%;
+}
+
+/* Input and Select Styles */
+input[type="text"] {
+    padding: 8px 15px;
     border: 1px solid #ccc;
-    border-radius: 3px;
-    width: 200px;
+    border-radius: 25px;
+    width: 250px;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+select {
+    padding: 8px 15px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    width: auto;
+    min-width: 100px;
+    transition: all 0.3s ease;
+    text-align: center;
+    text-align-last: center;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 1em;
+    padding-right: 30px;
+}
+
+input[type="text"]:focus,
+select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 2px 5px rgba(52, 152, 219, 0.2);
+}
+
+/* Range Input specific styles */
+input[type="range"] {
+    width: 150px;
+    margin: 0;
+    padding: 0;
+    vertical-align: middle;
 }
 
 textarea {
@@ -38,20 +85,70 @@ textarea {
     resize: none;
 }
 
-button[type="submit"], button.generate-style {
+/* Button Styles */
+button[type="submit"],
+button.generate-style {
     padding: 10px 20px;
-    background-color: #5cb85c;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 25px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    transform: scale(1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+button[type="submit"] {
+    background-color: #5cb85c;
+}
+
+button#random-word-btn {
+    background-color: #3498db;
+}
+
+button[type="submit"]:hover {
+    background-color: #4cae4c;
+}
+
+button#random-word-btn:hover {
+    background-color: #2980b9;
 }
 
 button[type="submit"]:hover,
 button.generate-style:hover {
-    background-color: #4cae4c;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }
 
+button[type="submit"]:active,
+button.generate-style:active {
+    transform: scale(0.98);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Button Group */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+/* Speed Control */
+.speed-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+}
+
+.speed-control label {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+    color: #333;
+}
+
+/* Output Styles */
 .output {
     margin-top: 20px;
     padding: 15px;
@@ -63,58 +160,53 @@ button.generate-style:hover {
     overflow: hidden;
 }
 
+/* Train Styles */
 .train-container {
     position: relative;
     width: 100%;
     height: 80px;
     margin-top: 20px;
-    z-index: 0;
+    margin-bottom: 20px;
     overflow: hidden;
+}
+
+.train-with-wheels {
+    display: inline-block;
+    position: relative;
+    white-space: nowrap;
+    animation: scrollTrain linear infinite;
 }
 
 .train-output {
     display: inline-block;
     white-space: nowrap;
-    animation: scrollTrain 12s linear infinite;
-    font-size: 1.5em;
+    font-size: 2em;
+    margin-bottom: 5px;
 }
 
-@keyframes scrollTrain {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
-}
-
-.train-row {
-    display: flex;
-    justify-content: center;
-}
-
-.train-car {
-    display: inline-block;
-    text-align: center;
-    margin: 0 5px;
-    position: relative;
-}
-
-.car, .engine {
-    background-color: #fff;
-    padding: 5px;
-    border-radius: 5px;
-    border: 1px solid #aaa;
-    display: inline-block;
-}
-
+/* Wheels Styles */
 .wheels-row {
     display: flex;
-    justify-content: center;
-    margin-top: 10px;
+    justify-content: space-evenly;
+    margin-top: -5px;
     gap: 10px;
+    position: absolute;
+    bottom: -15px;
+    left: 0;
+    right: 0;
 }
 
 .wheel {
-    width: 15px;
-    height: 15px;
-    animation: spinCounter 2s linear infinite;
+    width: 20px;
+    height: 20px;
+    animation: spinCounter linear infinite;
+    transform-origin: center;
+}
+
+/* Animation Keyframes */
+@keyframes scrollTrain {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
 }
 
 @keyframes spinCounter {
@@ -122,30 +214,7 @@ button.generate-style:hover {
     100% { transform: rotate(-360deg); }
 }
 
-.rails {
-    position: absolute;
-    bottom: -10px;
-    left: 0;
-    width: 100%;
-    height: 10px;
-    z-index: 0;
-}
-
-.message {
-    text-align: center;
-    font-weight: bold;
-    margin-top: 10px;
-    color: #007bff;
-}
-
-.challenge {
-    text-align: center;
-    margin-bottom: 15px;
-    font-style: italic;
-    color: #888;
-}
-
-
+/* Train Block and Rails */
 .train-block {
     position: relative;
     margin-bottom: 40px;
@@ -160,41 +229,70 @@ button.generate-style:hover {
     z-index: 0;
 }
 
-/* Form controls layout */
-.form-controls {
+/* Message and Challenge Styles */
+.message {
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+    color: #007bff;
+}
+
+.challenge {
+    text-align: center;
+    margin-bottom: 15px;
+    font-style: italic;
+    color: #888;
+}
+
+/* Definition Container */
+.definition-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px 15px;
+    background-color: #f0f0f0;
+    border-top: 3px solid #3498db;
+    font-style: italic;
+    font-size: 0.9em;
+    z-index: 100;
+    text-align: center;
+}
+
+/* Previous CSS remains the same until the engine selector section */
+
+/* Engine Selector Group - New */
+.engine-group {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
     justify-content: center;
-    align-items: center;
     gap: 10px;
-    margin: 10px 0;
 }
 
-/* Speed control specific styling */
-.speed-control {
-    display: flex;
-    align-items: center;
-    gap: 5px;
+.engine-group label {
     margin: 0;
-    padding: 0;
-}
-
-.speed-control label {
-    margin: 0;
-    padding: 0;
-    font-weight: normal;
     color: #333;
+    font-weight: normal;
 }
 
-/* Override existing range input styles */
-input[type="range"] {
-    width: 120px;
-    margin: 0 5px;
-    padding: 0;
-    vertical-align: middle;
+select {
+    padding: 8px 15px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    width: auto;
+    min-width: 80px; /* Reduced since we don't need space for text */
+    transition: all 0.3s ease;
+    text-align: center;
+    text-align-last: center;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 1em;
+    padding-right: 30px;
 }
 
-/* Ensure consistent button spacing */
-button {
-    margin: 0 5px;
-}
+/* Rest of the CSS remains the same */

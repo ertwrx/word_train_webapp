@@ -39,25 +39,31 @@
 </head>
 <body>
     <h1>🚂 Word Train Generator</h1>
-    <form method="POST" id="train-form">
+<form method="POST" id="train-form">
     <div class="form-controls">
         <input type="text" name="word" placeholder="Enter word(s)" required autofocus>
         
-        <select name="engine">
-            <option value="🚂">🚂 Classic</option>
-            <option value="🚀">🚀 Rocket</option>
-            <option value="🛸">🛸 UFO</option>
-            <option value="🚌">🚌 Bus</option>
-            <option value="🐍">🐍 Snake</option>
-        </select>
-        
+        <div class="engine-group">
+            <label for="engine">Select Engine:</label>
+            <select name="engine" id="engine">
+<option value="🚂">🚂</option>
+                <option value="🦄">🦄</option>
+                <option value="🚀">🚀</option>
+                <option value="🛸">🛸</option>
+                <option value="🚌">🚌</option>
+                <option value="🐍">🐍</option>
+            </select>
+        </div>
+
         <div class="speed-control">
             <label for="speed">Speed:</label>
             <input type="range" id="speed" name="speed" min="5" max="30" value="{{ speed if speed else 12 }}">
         </div>
-        
-        <button type="submit">Generate Train</button>
-        <button type="button" id="random-word-btn" class="generate-style">🎲 Random Word</button>
+
+        <div class="button-group">
+            <button type="submit">Generate Train</button>
+            <button type="button" id="random-word-btn" class="generate-style">🎲 Surprise Me</button>
+        </div>
     </div>
 </form>
 
@@ -72,28 +78,31 @@
         <div class="output">
             <h2>Your Trains:</h2>
             {% for train in output %}
-            <div class="train-block">
-                <div class="train-container">
-                    <div class="train-row">
-                        <div class="train-output">{{ train | safe }}</div>
-                    </div>
-                </div>
-                <div class="wheels-row">
-                    {% for _ in range(train|length // 2) %}
-                    <svg class="wheel" viewBox="0 0 40 40">
-                        <circle cx="20" cy="20" r="16" stroke="black" stroke-width="3" fill="gray" />
-                        <line x1="20" y1="4" x2="20" y2="36" stroke="black" stroke-width="2" />
-                        <line x1="4" y1="20" x2="36" y2="20" stroke="black" stroke-width="2" />
-                    </svg>
-                    {% endfor %}
-                </div>
-                <div class="rails">
-                    <svg width="100%" height="20">
-                        <rect x="0" y="10" width="100%" height="4" fill="#444" />
-                        <line x1="0" y1="10" x2="100%" y2="10" stroke="#777" stroke-width="2" stroke-dasharray="10, 10" />
-                    </svg>
-                </div>
-                </div>
+
+<div class="train-block">
+    <div class="train-container">
+        <div class="train-with-wheels">
+            <div class="train-output">{{ train | safe }}</div>
+            <div class="wheels-row">
+                {% set train_length = (train|string|length if train else 0) %}
+                {% for _ in range((train_length|int // 2)|int) %}
+                <svg class="wheel" viewBox="0 0 40 40">
+                    <circle cx="20" cy="20" r="16" stroke="black" stroke-width="3" fill="gray" />
+                    <line x1="20" y1="4" x2="20" y2="36" stroke="black" stroke-width="2" />
+                    <line x1="4" y1="20" x2="36" y2="20" stroke="black" stroke-width="2" />
+                </svg>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="rails">
+        <svg width="100%" height="20">
+            <rect x="0" y="10" width="100%" height="4" fill="#444" />
+            <line x1="0" y1="10" x2="100%" y2="10" stroke="#777" stroke-width="2" stroke-dasharray="10, 10" />
+        </svg>
+    </div>
+</div>            
+
             {% endfor %}
         </div>
         {% endif %}
@@ -122,22 +131,26 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("Definition container found:", definitionContainer);
 
     // --- Speed slider handler ---
-    function updateAnimationSpeed() {
-        const speed = parseInt(slider.value);
-        // Reverse the speed value (so right is slow, left is fast)
-        const reversedSpeed = 35 - speed; // Using 35 as max since slider goes from 5-30
+function updateAnimationSpeed() {
+    const speed = parseInt(document.querySelector('input[name="speed"]').value);
+    const reversedSpeed = 35 - speed; // Using 35 as max since slider goes from 5-30
 
-        const trains = document.querySelectorAll('.train-output');
-        trains.forEach(train => {
-            train.style.animationDuration = reversedSpeed + 's';
-            console.log(`Animation speed set to ${reversedSpeed}s`);
+    const trainElements = document.querySelectorAll('.train-with-wheels');
+    trainElements.forEach(trainElement => {
+        trainElement.style.animationDuration = (reversedSpeed * 1.5) + 's';
+        
+        const wheels = trainElement.querySelectorAll('.wheel');
+        wheels.forEach(wheel => {
+            wheel.style.animationDuration = (reversedSpeed * 0.5) + 's';
         });
-    }
+    });
+}
 
-    slider.addEventListener('input', updateAnimationSpeed);
 
-    // Initialize speed on page load
-    updateAnimationSpeed();
+slider.addEventListener('input', updateAnimationSpeed);
+
+// Initialize speed on page load
+updateAnimationSpeed();
 
     // --- Enter key handler ---
     inputField.addEventListener('keydown', function (event) {
