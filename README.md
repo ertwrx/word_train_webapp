@@ -2,9 +2,11 @@
 
 A fun web app that generates word trains with graphical representations. Input any word and watch each letter become a train car—with customizable engines, affirmations, and interactive features!
 
+> **Note:** This project is a personal learning exercise, built from scratch to explore and practice web development concepts. The idea, design, and implementation are original and intended for educational purposes only.
+
 ## Demo
-<!-- Optionally add a screenshot or GIF -->
-![Demo Screenshot](screenshot.png)
+<!-- Put your screenshot in the root folder and uncomment the line below after uploading -->
+![App Screenshot](screenshot.png)
 
 ## Features
 
