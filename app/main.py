@@ -8,15 +8,16 @@ sys.path.append(project_root)
 from flask import Flask, request, render_template, session
 import random
 import logging
-from config import Config
+from config import config
 import click
 
-# Rest of your code remains the same...
 
 # Initialize Flask application
-app = Flask(__name__)
-app.config.from_object(Config)
-Config.init_app(app)
+app = Flask(__name__,
+           template_folder=os.path.join(os.path.dirname(__file__), 'templates'),
+           static_folder=os.path.join(os.path.dirname(__file__), 'static'))
+config.apply_config(app)
+
 
 # Setup logger for this module
 logger = logging.getLogger(__name__)
@@ -120,6 +121,6 @@ def list_words_command():
 
 if __name__ == "__main__":
     app.run(
-        debug=Config.DEBUG,
-        host=Config.HOST
+        debug=config.DEBUG,
+        host=config.HOST
     )
