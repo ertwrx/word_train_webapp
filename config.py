@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from datetime import datetime, UTC
-from typing import List, Optional
+from typing import Dict, Any, List, Optional
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
@@ -13,14 +13,14 @@ load_dotenv()
 
 class AppConfig:
     def __init__(self):
-        # Required environment variables
-        self.required_vars = [
-            'FLASK_SECRET_KEY',
-            'FLASK_ENV',
-            'GUNICORN_WORKERS',
-            'FLASK_HOST',
-            'FLASK_PORT'
-        ]
+        # Required environment variables with their expected types
+        self.required_vars = {
+            'FLASK_SECRET_KEY': str,
+            'FLASK_ENV': str,
+            'GUNICORN_WORKERS': int,
+            'FLASK_HOST': str,
+            'FLASK_PORT': int
+        }
 
         # Validate and load environment variables
         self.validate_env()
@@ -45,22 +45,84 @@ class AppConfig:
             'DEBUG': self.DEBUG,
             'SECRET_KEY': self.SECRET_KEY,
             'HOST': self.HOST,
-            'PORT': self.PORT
+            'PORT': self.PORT,
+            'CURRENT_TIME_UTC': self.CURRENT_TIME_UTC,
+            'CURRENT_USER': self.CURRENT_USER
         }
 
         # Set up logging as soon as config is initialized
         self.setup_logging()
 
-    def validate_env(self) -> None:
-        """Validate all required environment variables are present."""
-        missing: List[str] = [var for var in self.required_vars if not os.getenv(var)]
+    def validate_env(self) -> Dict[str, Any]:
+        """
+        Validate all required environment variables are present and of correct type.
+        Returns: Dict of validated environment variables
+        Raises: ValueError if validation fails
+        """
+        missing = []
+        invalid_types = []
+        validated_vars = {}
 
+        for var_name, expected_type in self.required_vars.items():
+            value = os.getenv(var_name)
+            
+            if value is None:
+                missing.append(var_name)
+                continue
+                
+            try:
+                # Convert and validate type
+                if expected_type == bool:
+                    validated_vars[var_name] = value.lower() in ('true', '1', 'yes')
+                elif expected_type == int:
+                    validated_vars[var_name] = int(value)
+                else:
+                    validated_vars[var_name] = expected_type(value)
+            except ValueError:
+                invalid_types.append(f"{var_name} (expected {expected_type.__name__})")
+
+        # Build error message if needed
+        errors = []
         if missing:
-            error_msg = (
-                f"Missing required environment variables: {', '.join(missing)}\n"
-                f"Please check your .env file or environment settings."
-            )
-            raise RuntimeError(error_msg)
+            errors.append(f"Missing required variables: {', '.join(missing)}")
+        if invalid_types:
+            errors.append(f"Invalid type for variables: {', '.join(invalid_types)}")
+            
+        if errors:
+            error_msg = "\n".join([
+                "Configuration validation failed:",
+                *errors,
+                "Please check your .env file or environment settings."
+            ])
+            raise ValueError(error_msg)
+
+        # Log successful validation
+        logging.info("Environment validation successful")
+        return validated_vars
+
+    def get_environment_value(self, key: str, default: Any = None, required: bool = False) -> Any:
+        """
+        Safe method to get environment variables with type conversion
+        Args:
+            key: The environment variable name
+            default: Default value if not found
+            required: Whether the variable is required
+        Returns:
+            The environment variable value with proper type conversion
+        """
+        value = os.getenv(key, default)
+        if required and value is None:
+            raise ValueError(f"Required environment variable {key} is not set")
+        
+        if value is not None:
+            # Convert to correct type based on default value if provided
+            if default is not None:
+                try:
+                    value = type(default)(value)
+                except ValueError:
+                    logging.warning(f"Could not convert {key} to type {type(default)}")
+                    
+        return value
 
     def setup_logging(self) -> None:
         """Configure application logging."""
@@ -99,17 +161,50 @@ class AppConfig:
         logging.info(f"Current user: {self.CURRENT_USER}")
         logging.info(f"Current time (UTC): {self.CURRENT_TIME_UTC}")
 
+    def get_environment_status(self) -> Dict[str, Any]:
+        """
+        Get the current status of all environment variables
+        Returns a dictionary with status information
+        """
+        return {
+            'environment': self.FLASK_ENV,
+            'debug_mode': self.DEBUG,
+            'timestamp_utc': self.CURRENT_TIME_UTC,
+            'user': self.CURRENT_USER,
+            'host': self.HOST,
+            'port': self.PORT,
+            'logging_configured': bool(logging.getLogger().handlers)
+        }
+
     def apply_config(self, app) -> None:
         """Apply configuration to Flask application."""
-        app.config.update({
-            'ENV': self.FLASK_ENV,
-            'DEBUG': self.DEBUG,
-            'SECRET_KEY': self.SECRET_KEY,
-            'HOST': self.HOST,
-            'PORT': self.PORT,
-            'CURRENT_TIME_UTC': self.CURRENT_TIME_UTC,
-            'CURRENT_USER': self.CURRENT_USER
-        })
+        app.config.update(self.FLASK_CONFIG)
+        
+        # Log configuration application
+        logging.info(f"Applied configuration to Flask application")
+        env_status = self.get_environment_status()
+        logging.info(f"Environment Status: {env_status}")
+
+    def validate_timestamp_format(self, timestamp_str: str) -> bool:
+        """
+        Validate if a timestamp string matches the required format
+        Args:
+            timestamp_str: The timestamp string to validate
+        Returns:
+            bool: True if valid, False otherwise
+        """
+        try:
+            datetime.strptime(timestamp_str, '%Y-%m-%d %H:%M:%S')
+            return True
+        except ValueError:
+            return False
 
 # Create a singleton instance
-config = AppConfig()
+try:
+    config = AppConfig()
+    # Validate current timestamp format
+    if not config.validate_timestamp_format(config.CURRENT_TIME_UTC):
+        logging.warning(f"Invalid timestamp format: {config.CURRENT_TIME_UTC}")
+except ValueError as e:
+    logging.error(f"Configuration Error: {e}")
+    sys.exit(1)
