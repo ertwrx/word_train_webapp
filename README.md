@@ -35,7 +35,10 @@ A fun web app that generates word trains with graphical representations. Input a
    pip install -r requirements.txt
    ```
 
-4. Add a `.env` file. Example:
+4. Copy the example environment file:
+   ```bash
+   cp .env.example .env
+
    ```
    SECRET_KEY=your_secret_key
    OTHER_CONFIG=...

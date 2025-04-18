@@ -54,6 +54,7 @@ Thumbs.db
 .env.development
 .env.test
 .env.production
+.env.*.local
 
 # Docker
 .docker/
@@ -88,3 +89,6 @@ coverage.xml
 *.tar.gz
 *.tgz
 *.zip
+
+# But allow example file
+!.env.example
