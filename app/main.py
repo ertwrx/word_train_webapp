@@ -53,6 +53,7 @@ def index():
     output = None
     message = ""
     speed = 12
+    engine = "🚂"  # Set a default engine for GET requests
 
     if request.method == "GET" or "challenge_word" not in session:
         session["challenge_word"] = random.choice(["python", "emoji", "rocket", "train", "erwin"])
@@ -74,7 +75,7 @@ def index():
         speed = int(request.form.get("speed", 12))
 
         if user_word:
-            output = [engine + user_word]
+            output = [user_word]
             
             session.setdefault("history", [])
             session["history"].append(user_word)
@@ -95,12 +96,14 @@ def index():
             message = "Please enter a word!"
             logger.warning("Empty word submission received")
 
+
     return render_template(
         "index.html",
         output=output,
         message=message,
         challenge_word=challenge_word,
-        speed=speed
+        speed=speed,
+        engine=engine
     )
 
 # CLI commands for admin tasks
