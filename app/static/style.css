@@ -532,3 +532,6 @@ body.dark-mode .output {
   color: #ffe878 !important;
   border-color: #223366 !important;
 }
+html, body {
+  overflow: hidden !important;
+}
