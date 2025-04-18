@@ -38,7 +38,8 @@ A fun web app that generates word trains with graphical representations. Input a
 4. Copy the example environment file:
    ```bash
    cp .env.example .env
-
+   ```
+   Edit this section:
    ```
    SECRET_KEY=your_secret_key
    OTHER_CONFIG=...
