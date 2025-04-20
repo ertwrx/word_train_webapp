@@ -46,6 +46,19 @@ cp .env.example .env
 
 ---
 
+### 🗝️ Generating a Secure Secret Key
+
+Generate a strong key:
+```bash
+python generate_secret.py
+```
+Copy the output into your `.env`:
+```
+SECRET_KEY=your_generated_secret_here
+```
+
+---
+
 ## ▶️ Usage
 
 ### 🐍 Run with Python (not for production)
@@ -118,19 +131,6 @@ You can also run the application using Docker Compose:
 
 ---
 
-## 🗝️ Generating a Secure Secret Key
-
-Generate a strong key:
-```bash
-python generate_secret.py
-```
-Copy the output into your `.env`:
-```
-SECRET_KEY=your_generated_secret_here
-```
-
----
-
 ## 🌐 Third-Party APIs Used
 
 - [Random Word API](https://random-word-api.vercel.app/) – random words
@@ -168,4 +168,3 @@ MIT License. See [LICENSE](LICENSE).
 Crafted by [ertwrx](https://github.com/ertwrx), with valuable assistance from AI 🤖.  
 This project is intended for educational and personal use.  
 If you have questions, suggestions, or concerns, please feel free to reach out to the maintainer.
-
