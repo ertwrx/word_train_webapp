@@ -165,6 +165,7 @@ MIT License. See [LICENSE](LICENSE).
 
 ## 🙏 Attribution & Disclaimer
 
-Original by [ertwrx](https://github.com/ertwrx).  
-For educational/personal use only.  
-Concerns? Contact the maintainer.
+Crafted by [ertwrx](https://github.com/ertwrx), with valuable assistance from AI 🤖.  
+This project is intended for educational and personal use.  
+If you have questions, suggestions, or concerns, please feel free to reach out to the maintainer.1~## 🙏 Attribution & Disclaimer
+
