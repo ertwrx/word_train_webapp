@@ -167,5 +167,5 @@ MIT License. See [LICENSE](LICENSE).
 
 Crafted by [ertwrx](https://github.com/ertwrx), with valuable assistance from AI 🤖.  
 This project is intended for educational and personal use.  
-If you have questions, suggestions, or concerns, please feel free to reach out to the maintainer.1~## 🙏 Attribution & Disclaimer
+If you have questions, suggestions, or concerns, please feel free to reach out to the maintainer.
 
