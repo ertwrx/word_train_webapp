@@ -1,4 +1,4 @@
-# Word Train WebApp 🧠📝
+# 🚂 Word Train WebApp 
 
 [![12-Factor App](https://img.shields.io/badge/12--Factor-Compliant-brightgreen?logo=checkmarx&logoColor=white)](https://12factor.net/)
 [![Docker Ready](https://img.shields.io/badge/Docker-Ready-blue?logo=docker&logoColor=white)](https://www.docker.com/)
