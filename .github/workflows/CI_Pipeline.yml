@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master
+      - master  # Trigger on 'master' branch pushes
   pull_request:
     branches:
-      - master  
+      - master  # Trigger on PRs to 'master'
 
 jobs:
   # Job 1: Code Linting and Quality Check
@@ -46,17 +46,17 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.9'
 
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        pip install pytest
+        pip install pytest pytest-flask
 
     - name: Run tests
       run: |
-        pytest
+        python -m pytest -v tests/
 
   # Job 3: Security Scan
   security_scan:
@@ -70,7 +70,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12'
+        python-version: '3.9'
 
     - name: Install dependencies
       run: |
@@ -87,7 +87,7 @@ jobs:
     name: Docker Build & Push
     runs-on: ubuntu-latest
     needs: [tests, security_scan]
-    if: github.ref == 'refs/heads/main'  # Only on main branch
+    if: github.ref == 'refs/heads/master'  # Only on master branch
 
     steps:
     - name: Checkout code
@@ -116,7 +116,7 @@ jobs:
     name: Deploy Application
     runs-on: ubuntu-latest
     needs: docker_build_push
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/master'
 
     steps:
     - name: Deploy to server
@@ -127,6 +127,3 @@ jobs:
         # - SSH into your server
         # - Pull the latest Docker image
         # - Start or restart the container
-        
-        # Example deployment command (not functional, for illustration only):
-        # ssh -i ${{ secrets.SSH_PRIVATE_KEY }} user@your-server "docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/word_train_webapp:latest && docker-compose up -d"
