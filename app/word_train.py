@@ -4,14 +4,15 @@
 import random
 from typing import Dict, Any
 
+
 def generate_word_train(word: str, engine: str = "🚂") -> str:
     """
     Generates a graphical word train representation with spinning SVG wheels.
-    
+
     Args:
         word (str): The word to transform into a train
         engine (str): The engine emoji to use (default: "🚂")
-    
+
     Returns:
         str: HTML string representing the word train
     """

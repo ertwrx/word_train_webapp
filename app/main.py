@@ -2,7 +2,7 @@ import os
 import sys
 
 # Add the project root directory to Python path
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
 from flask import Flask, request, render_template, session
@@ -13,14 +13,17 @@ import click
 
 
 # Initialize Flask application
-app = Flask(__name__,
-           template_folder=os.path.join(os.path.dirname(__file__), 'templates'),
-           static_folder=os.path.join(os.path.dirname(__file__), 'static'))
+app = Flask(
+    __name__,
+    template_folder=os.path.join(os.path.dirname(__file__), "templates"),
+    static_folder=os.path.join(os.path.dirname(__file__), "static"),
+)
 config.apply_config(app)
 
 
 # Setup logger for this module
 logger = logging.getLogger(__name__)
+
 
 def generate_word_train(word, engine="🚂"):
     """Generates a graphical word train representation with spinning SVG wheels."""
@@ -48,6 +51,7 @@ def generate_word_train(word, engine="🚂"):
         train += style + wheel_svg
     return train
 
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     output = None
@@ -56,14 +60,16 @@ def index():
     engine = "🚂"  # Set a default engine for GET requests
 
     if request.method == "GET" or "challenge_word" not in session:
-        session["challenge_word"] = random.choice(["python", "emoji", "rocket", "train", "erwin"])
-    
+        session["challenge_word"] = random.choice(
+            ["python", "emoji", "rocket", "train", "erwin"]
+        )
+
     challenge_word = session["challenge_word"]
 
     if request.method == "POST":
         # Get and clean user input
         user_word = request.form.get("word", "").strip()
-        
+
         # Debug logging (replacing print statements)
         logger.debug("=== Debug Information ===")
         logger.debug(f"Raw form data: {dict(request.form)}")
@@ -76,7 +82,7 @@ def index():
 
         if user_word:
             output = [user_word]
-            
+
             session.setdefault("history", [])
             session["history"].append(user_word)
 
@@ -86,16 +92,19 @@ def index():
             else:
                 message = "Try again! 🎯"
                 logger.info(f"Match failed for user word: {user_word}")
-            
-            new_challenge = random.choice(["python", "emoji", "rocket", "train", "erwin"])
+
+            new_challenge = random.choice(
+                ["python", "emoji", "rocket", "train", "erwin"]
+            )
             while new_challenge.lower() == challenge_word.lower():
-                new_challenge = random.choice(["python", "emoji", "rocket", "train", "erwin"])
+                new_challenge = random.choice(
+                    ["python", "emoji", "rocket", "train", "erwin"]
+                )
             session["challenge_word"] = new_challenge
             challenge_word = new_challenge
         else:
             message = "Please enter a word!"
             logger.warning("Empty word submission received")
-
 
     return render_template(
         "index.html",
@@ -103,8 +112,9 @@ def index():
         message=message,
         challenge_word=challenge_word,
         speed=speed,
-        engine=engine
+        engine=engine,
     )
+
 
 # CLI commands for admin tasks
 @app.cli.command("clear-sessions")
@@ -112,18 +122,17 @@ def clear_sessions_command():
     """Clear all session data."""
     session.clear()
     logger.info("All sessions cleared")
-    click.echo('All sessions have been cleared.')
+    click.echo("All sessions have been cleared.")
+
 
 @app.cli.command("list-words")
 def list_words_command():
     """List all challenge words available."""
     words = ["python", "emoji", "rocket", "train", "erwin"]
-    click.echo('Available challenge words:')
+    click.echo("Available challenge words:")
     for word in words:
         click.echo(f"- {word}")
 
+
 if __name__ == "__main__":
-    app.run(
-        debug=config.DEBUG,
-        host=config.HOST
-    )
+    app.run(debug=config.DEBUG, host=config.HOST)

@@ -11,7 +11,7 @@ load_dotenv()
 bind = f"{os.getenv('FLASK_HOST', '0.0.0.0')}:{os.getenv('FLASK_PORT', '5000')}"
 
 # Worker processes with fallback values
-workers = int(os.getenv('GUNICORN_WORKERS', '3'))
-threads = int(os.getenv('GUNICORN_THREADS', '2'))
-worker_class = os.getenv('GUNICORN_WORKER_CLASS', 'sync')
-timeout = int(os.getenv('GUNICORN_TIMEOUT', '30'))
+workers = int(os.getenv("GUNICORN_WORKERS", "3"))
+threads = int(os.getenv("GUNICORN_THREADS", "2"))
+worker_class = os.getenv("GUNICORN_WORKER_CLASS", "sync")
+timeout = int(os.getenv("GUNICORN_TIMEOUT", "30"))

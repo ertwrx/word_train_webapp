@@ -16,25 +16,28 @@ sys.path.insert(0, project_root)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class RequestIDMiddleware:
     def __init__(self, app):
         self.app = app
 
     def __call__(self, environ, start_response):
         request_id = str(uuid.uuid4())
-        environ['REQUEST_ID'] = request_id
+        environ["REQUEST_ID"] = request_id
         logger.info(f"Request started - ID: {request_id}")
         return self.app(environ, start_response)
+
 
 def graceful_shutdown(signum, frame):
     logger.info("Graceful shutdown initiated...")
     sys.exit(0)
 
+
 # Only register the signal handler in the main process
 if (
-    os.environ.get('WERKZEUG_RUN_MAIN') == 'true'  # flask run main process
-    or 'gunicorn' in os.environ.get('SERVER_SOFTWARE', '')  # gunicorn, etc
-    or os.environ.get('FLASK_ENV') == 'production'  # production env
+    os.environ.get("WERKZEUG_RUN_MAIN") == "true"  # flask run main process
+    or "gunicorn" in os.environ.get("SERVER_SOFTWARE", "")  # gunicorn, etc
+    or os.environ.get("FLASK_ENV") == "production"  # production env
     or __name__ == "__main__"  # direct run
 ):
     try:
@@ -49,6 +52,7 @@ logger.info(f"Application Version: {VERSION}")
 
 try:
     from app.main import app
+
     app.wsgi_app = RequestIDMiddleware(app.wsgi_app)
     logger.info("Successfully imported app.main")
 except ImportError as e:
@@ -59,9 +63,7 @@ except ImportError as e:
 
 if __name__ == "__main__":
     logger.info(f"Starting Word Train WebApp v{VERSION}")
-    logger.info(f"Current time (UTC): {datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S')}")
-    app.run(
-        debug=app.config['DEBUG'],
-        host=app.config['HOST'],
-        port=app.config['PORT']
+    logger.info(
+        f"Current time (UTC): {datetime.now(UTC).strftime('%Y-%m-%d %H:%M:%S')}"
     )
+    app.run(debug=app.config["DEBUG"], host=app.config["HOST"], port=app.config["PORT"])

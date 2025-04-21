@@ -6,16 +6,17 @@ import secrets
 import base64
 from datetime import datetime
 
+
 def generate_secret_key():
     # Generate 32 random bytes (256 bits) of secure random data
     random_bytes = secrets.token_bytes(32)
-    
+
     # Convert the bytes to a base64 string for safe storage
-    secret_key = base64.b64encode(random_bytes).decode('utf-8')
-    
+    secret_key = base64.b64encode(random_bytes).decode("utf-8")
+
     # Get current timestamp
-    timestamp = datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-    
+    timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
     # Print the results
     print("\n=== Flask Secret Key Generator ===")
     print(f"Generated at: {timestamp} UTC")
@@ -27,8 +28,9 @@ def generate_secret_key():
     print("\nAdd this to your .env file as:")
     print("FLASK_SECRET_KEY=" + secret_key)
     print("\nWarning: Keep this key secret and never commit it to version control!")
-    
+
     return secret_key
+
 
 if __name__ == "__main__":
     generate_secret_key()
