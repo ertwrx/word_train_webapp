@@ -10,10 +10,10 @@ def test_app_imports():
 
 
 def test_flask_app_creation():
-    """Test that Flask app can be imported and is initialized."""
+    """Test that Flask app can be created."""
     try:
-        from app import app
-        assert app is not None
-        assert app.name == 'app'
+        from app import create_app
+        flask_app = create_app()
+        assert flask_app is not None
     except (ImportError, AttributeError) as e:
         assert False, f"Failed to create Flask app: {e}"
