@@ -2,6 +2,12 @@
 
 [![12-Factor App](https://img.shields.io/badge/12--Factor-Compliant-brightgreen?logo=checkmarx&logoColor=white)](https://12factor.net/)
 [![Docker Ready](https://img.shields.io/badge/Docker-Ready-blue?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-yellow?logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-Web_App-red?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![Gunicorn](https://img.shields.io/badge/Gunicorn-WSGI_Server-green?logo=gunicorn&logoColor=white)](https://gunicorn.org/)
+[![Docker Compose](https://img.shields.io/badge/Docker_Compose-Ready-informational?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![Environment Config](https://img.shields.io/badge/Environment-Config-success?logo=dotenv&logoColor=white)](https://pypi.org/project/python-dotenv/)
+[![MIT License](https://img.shields.io/badge/License-MIT-lightgrey?logo=opensourceinitiative&logoColor=white)](LICENSE)
 
 A fun, interactive vocabulary training app built with Flask and Gunicorn, ready for seamless Docker deployment.
 
@@ -131,6 +137,59 @@ You can also run the application using Docker Compose:
 
 ---
 
+## 🔧 Admin Processes
+
+The Word Train webapp provides several administrative commands that can be run in the same environment as the application. These commands follow the 12-factor app methodology for admin processes.
+
+### Available Commands
+
+#### 🧹 Clear All Sessions
+
+```bash
+flask clear-sessions
+```
+
+This command clears all session data from the application, which can be useful for troubleshooting or resetting user state.
+
+#### 📋 List Challenge Words
+
+```bash
+flask list-words
+```
+
+This command lists all challenge words available in the application.
+
+### Running Admin Commands
+
+#### In Development Environment
+
+```bash
+# Activate virtual environment first
+source venv/bin/activate
+
+# Set Flask application and run command
+export FLASK_APP=app.main
+flask clear-sessions
+```
+
+#### With Docker
+
+```bash
+# For a running container
+docker exec -it word-train-container flask clear-sessions
+
+# Or using docker-compose
+docker-compose exec web flask list-words
+```
+
+#### With Docker Compose
+
+```bash
+docker-compose exec web flask clear-sessions
+```
+
+---
+
 ## 🌐 Third-Party APIs Used
 
 - [Random Word API](https://random-word-api.vercel.app/) – random words
@@ -167,4 +226,3 @@ MIT License. See [LICENSE](LICENSE).
 
 Crafted by [ertwrx](https://github.com/ertwrx), with valuable assistance from AI 🤖.  
 This project is intended for educational and personal use.  
-If you have questions, suggestions, or concerns, please feel free to reach out to the maintainer.
