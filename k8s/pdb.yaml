@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: word-train-pdb
+  labels:
+    app: word-train-app
+spec:
+  minAvailable: 2  # Always keep at least 2 pods available
+  selector:
+    matchLabels:
+      app: word-train-app

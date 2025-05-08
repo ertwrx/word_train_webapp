@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: word-train-pod # You can keep this name or change it
+  labels:
+    app: word-train-app # Matching the Deployment's pod template labels
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - word-train-app
+          topologyKey: "kubernetes.io/hostname"
+  containers:
+  - name: word-train-app # Consistent container name
+    image: ertwrx/word_train_webapp:latest
+    imagePullPolicy: Always
+    ports:
+    - containerPort: 5000
+      name: http
+      protocol: TCP
+    env:
+    - name: FLASK_ENV
+      valueFrom:
+        configMapKeyRef:
+          name: word-train-config
+          key: FLASK_ENV
+    - name: SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: word-train-secrets
+          key: SECRET_KEY
+    - name: FLASK_SECRET_KEY
+      valueFrom:
+        secretKeyRef:
+          name: word-train-secrets
+          key: SECRET_KEY
+    - name: FLASK_HOST
+      value: "0.0.0.0"
+    - name: FLASK_PORT
+      value: "5000"
+    - name: GUNICORN_WORKERS
+      value: "2"
+    resources:
+      limits:
+        cpu: "1"
+        memory: "512Mi"
+      requests:
+        cpu: "200m"
+        memory: "256Mi"
+    livenessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 30
+      periodSeconds: 15
+      timeoutSeconds: 5
+      failureThreshold: 3
+    readinessProbe:
+      httpGet:
+        path: /
+        port: http
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 3
+    startupProbe:
+      httpGet:
+        path: /
+        port: http
+      failureThreshold: 30

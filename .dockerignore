@@ -54,3 +54,4 @@ docker-compose.yml
 dist
 build
 .DS_Store
+k8s/
