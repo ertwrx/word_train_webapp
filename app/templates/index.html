@@ -258,7 +258,7 @@ document.getElementById('train-form').addEventListener('submit', function(e) {
             createConfetti();
         }
 
-        showPopup();
+        // Removed showPopup() call here
         updateTrainWithWord(word);
     }
 
@@ -432,7 +432,7 @@ function updateTrainWithWord(word) {
     // --- Random word button handler ---
     randomButton.addEventListener('click', async () => {
         console.log("Random Word button clicked.");
-        showPopup();
+        // Removed showPopup() call here
         definitionContainer.innerHTML = "<i>Generating random word...</i>";
 
         const randomWordResult = await generateRandomWord();
@@ -497,43 +497,7 @@ function updateTrainWithWord(word) {
     }
 }); // End DOMContentLoaded
 
-// --- Popup function (unchanged) ---
-function showPopup() {
-    const messages = [
-        "Is it time for the train yet? ⏰",
-        "Hop on the word train! 🚂",
-        "Wheels are spinning! 🔄",
-        "Fasten your seatbelts, it's going to be a fun ride! 🎢",
-    ];
-
-    const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-
-    const popup = document.createElement("div");
-    popup.textContent = randomMessage;
-    popup.style.position = "fixed";
-    popup.style.bottom = "20px";
-    popup.style.left = "50%";
-    popup.style.transform = "translateX(-50%)";
-    popup.style.backgroundColor = "#ffc";
-    popup.style.border = "1px solid #cc9";
-    popup.style.padding = "10px 20px";
-    popup.style.borderRadius = "8px";
-    popup.style.boxShadow = "0 2px 6px rgba(0,0,0,0.2)";
-    popup.style.fontSize = "1.1em";
-    popup.style.fontWeight = "bold";
-    popup.style.zIndex = "1000";
-    popup.style.opacity = "1";
-
-    document.body.appendChild(popup);
-
-    setTimeout(() => {
-        popup.style.transition = "opacity 0.9s ease";
-        popup.style.opacity = "0";
-        setTimeout(() => {
-            popup.remove();
-        }, 1000);
-    }, 1500);
-}
+// Removed showPopup function completely
 
 document.addEventListener("DOMContentLoaded", function() {
   const moon = document.getElementById('dark-mode-toggle');
