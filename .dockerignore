@@ -3,55 +3,57 @@
 .gitignore
 .gitattributes
 
-# Python
-__pycache__
-*.pyc
-*.pyo
-*.pyd
-.Python
+# Python cache and compiled files
+__pycache__/
 *.py[cod]
 *$py.class
 *.so
 
-# Virtual Environment
-venv
-env
-.venv
-ENV
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
 .env
 
-# IDE
-.idea
-.vscode
+# IDE and editor settings
+.idea/
+.vscode/
 *.swp
 *.swo
+.DS_Store
 
 # Logs
-logs
+logs/
 *.log
 
-# Test
-tests
-test
-testing
-.pytest_cache
+# Tests
+tests/
+test/
+testing/
+.pytest_cache/
 .coverage
-htmlcov
+.coverage.*
+htmlcov/
 
-# Documentation
-docs
+# Build artifacts
+*.egg-info/
+dist/
+build/
+
+# Documentation and misc
 *.md
 LICENSE
 README*
 
-# Docker
-Dockerfile
-docker-compose.yml
-.docker
+# Docker metadata (don’t ignore Dockerfile if you need it!)
+.docker/
+docker-compose.override.yml
 
-# Other
-*.egg-info
-dist
-build
-.DS_Store
+# Kubernetes configs (optional if you never use them inside containers)
 k8s/
+
+# Ignore local backup files
+*.bak
+*.tmp
+*~
