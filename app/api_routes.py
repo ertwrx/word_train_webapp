@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from dictionary_service import get_definition, generate_random_word
+from app.dictionary_service import get_definition, generate_random_word
 
 # Create a blueprint for API routes
 api = Blueprint('api', __name__, url_prefix='/api')
@@ -34,4 +34,3 @@ def random_word():
 
 # Add this to your main app.py file
 # from api_routes import api
-# app.register_blueprint(api)

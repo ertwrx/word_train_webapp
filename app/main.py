@@ -11,8 +11,7 @@ import logging
 from config import config
 import click
 from app.dictionary_service import get_definition, generate_random_word
-from api_routes import api
-app.register_blueprint(api)
+from app.api_routes import api  # Corrected import path
 
 # Initialize Flask application
 app = Flask(
@@ -22,6 +21,8 @@ app = Flask(
 )
 config.apply_config(app)
 
+# Register the blueprint after the app is created
+app.register_blueprint(api)
 
 # Setup logger for this module
 logger = logging.getLogger(__name__)
@@ -105,7 +106,7 @@ def index():
                 )
             session["challenge_word"] = new_challenge
             challenge_word = new_challenge
-            
+
             # Get initial definition for the word (server-side)
             initial_definition = get_definition(user_word)
         else:
