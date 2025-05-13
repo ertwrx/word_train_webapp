@@ -5,11 +5,12 @@ import sys
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-from flask import Flask, request, render_template, session
+from flask import Flask, request, render_template, session, jsonify
 import random
 import logging
 from config import config
 import click
+from app.dictionary_service import get_definition, generate_random_word
 
 
 # Initialize Flask application
@@ -58,6 +59,7 @@ def index():
     message = ""
     speed = 12
     engine = "🚂"  # Set a default engine for GET requests
+    initial_definition = ""
 
     if request.method == "GET" or "challenge_word" not in session:
         session["challenge_word"] = random.choice(
@@ -102,9 +104,21 @@ def index():
                 )
             session["challenge_word"] = new_challenge
             challenge_word = new_challenge
+            
+            # Get initial definition for the word (server-side)
+            initial_definition = get_definition(user_word)
         else:
             message = "Please enter a word!"
             logger.warning("Empty word submission received")
+
+    # If it's an AJAX request specifically for definitions
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.args.get('get_definition'):
+        word = request.args.get('word', '')
+        return jsonify({'definition': get_definition(word)})
+
+    # If it's an AJAX request for random words
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' and request.args.get('random_word'):
+        return jsonify({'word': generate_random_word()})
 
     return render_template(
         "index.html",
@@ -113,6 +127,7 @@ def index():
         challenge_word=challenge_word,
         speed=speed,
         engine=engine,
+        initial_definition=initial_definition
     )
 
 
@@ -132,6 +147,21 @@ def list_words_command():
     click.echo("Available challenge words:")
     for word in words:
         click.echo(f"- {word}")
+
+
+# Add routes for API endpoints
+@app.route("/api/define/<word>", methods=["GET"])
+def define_word_api(word):
+    """API endpoint to get a word definition"""
+    definition = get_definition(word)
+    return jsonify({"word": word, "definition": definition})
+
+
+@app.route("/api/random-word", methods=["GET"])
+def random_word_api():
+    """API endpoint to get a random word"""
+    word = generate_random_word()
+    return jsonify({"word": word})
 
 
 if __name__ == "__main__":
