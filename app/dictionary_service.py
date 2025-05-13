@@ -1,9 +1,10 @@
 import requests
 import logging
+import re
 from typing import Dict, Any, Optional
 import functools
 import time
-from flask import current_app
+import random
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -34,7 +35,9 @@ def get_definition(word: str) -> str:
             return cache_entry['definition']
     
     # Special case checks
-    lowerword = word.lower().replace(/\s+/g, '')
+    lowerword = word.lower()
+    # Remove spaces from lowerword (fixed the JS regex usage in Python)
+    lowerword = re.sub(r'\s+', '', lowerword)
     
     # Special case for Erwin
     if lowerword == "erwin":
@@ -61,7 +64,7 @@ def get_definition(word: str) -> str:
         
         # Handle word not found
         if not response.ok:
-            logger.warning(f"Dictionary API returned non-OK status ({response.status}) for '{clean_word}'")
+            logger.warning(f"Dictionary API returned non-OK status ({response.status_code}) for '{clean_word}'")
             word_not_found_responses = [
                 f'"{word}"? I looked everywhere but couldn\'t find this word! 🕵️‍♂️',
                 f'Ah! Do you speak the language of the ancients? "{word}" is a mystery to me! 🧙‍♂️',
@@ -71,7 +74,6 @@ def get_definition(word: str) -> str:
                 f'My dictionary threw a 404 error page at me for "{word}". Rude! 📄',
                 f'Is "{word}" even legal in Scrabble? Doesn\'t look like it\'s in my dictionary!'
             ]
-            import random
             definition = random.choice(word_not_found_responses)
             _cache_definition(cache_key, definition)
             return definition
@@ -127,7 +129,7 @@ def _cache_definition(key: str, definition: str) -> None:
             if items[i][0] in _definition_cache:
                 del _definition_cache[items[i][0]]
 
-# Function to generate random words - could be moved from client side
+# Function to generate random words - moved from client side
 def generate_random_word() -> str:
     """Generate a random word from API or fallback to local list"""
     try:
@@ -145,5 +147,3 @@ def generate_random_word() -> str:
             "Shine your light", "Make it happen", "You are valued", "Keep moving forward", 
             "Stay strong now", "Be truly brave", "Embrace the calm"
         ]
-        import random
-        return random.choice(fallback_words)

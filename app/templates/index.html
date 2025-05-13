@@ -310,10 +310,17 @@ function updateTrainWithWord(word) {
             definitionContainer.innerHTML = "Error loading new train. Please try again.";
         });
 }
+
     // --- Update definition for a word ---
     function updateDefinitionForWord(word) {
         console.log(`Updating definition for: "${word}"`);
-        getDefinition(word)
+        // MODIFIED: Now using server-side endpoint instead of client-side API call
+        fetch(`/api/definition?word=${encodeURIComponent(word)}`)
+            .then(response => {
+                console.log(`Definition API response status: ${response.status}`);
+                if (!response.ok) throw new Error(`Definition API failed with status ${response.status}`);
+                return response.text();
+            })
             .then(definition => {
                 console.log(`Definition received for "${word}":`, definition);
                 definitionContainer.innerHTML = definition;
@@ -327,20 +334,20 @@ function updateTrainWithWord(word) {
     // --- Random word generator function ---
     async function generateRandomWord() {
         try {
-            const response = await fetch('https://random-word-api.vercel.app/api?words=1');
-            if (!response.ok) throw new Error(`Network response was not ok (${response.status})`);
+            // MODIFIED: Now using server-side endpoint instead of external API
+            const response = await fetch('/api/random-word');
+            if (!response.ok) throw new Error(`Random word API failed with status ${response.status}`);
             const data = await response.json();
-            if (!data || !data[0]) throw new Error("Invalid data received from random word API");
-            console.log("Received random word:", data[0]);
+            console.log("Received random word:", data.word);
             return {
-                word: data[0],
-                isFromAPI: true
+                word: data.word,
+                isFromAPI: data.isFromAPI
             };
         } catch (error) {
             console.error("Random Word Fetch error:", error);
             const fallbackWords = ["You are enough", "You can do it", "Stay in peace", "Feel the joy", "Keep your hope", "Trust your path", "Love is here", "Dream without fear", "Shine your light", "Make it happen", "You are valued", "Keep moving forward", "Stay strong now", "Be truly brave", "Embrace the calm"];
             const randomWord = fallbackWords[Math.floor(Math.random() * fallbackWords.length)];
-            console.log("Using fallback word:", randomWord);
+            console.log("Using client-side fallback word:", randomWord);
             return {
                 word: randomWord,
                 isFromAPI: false
@@ -348,86 +355,8 @@ function updateTrainWithWord(word) {
         }
     }
 
-    // --- Dictionary API function (with special cases handling) ---
-    async function getDefinition(word) {
-        console.log(`Inside getDefinition, looking up: "${word}"`);
-
-        if (!word) return "Enter a word to see its definition!"; // Handle empty input early
-
-        // Special case checks - ERWIN added
-        const lowerWord = word.toLowerCase().replace(/\s+/g, '');
-        
-        // Special case for Erwin
-        if (lowerWord === "erwin") {
-            console.log("Special case detected: Erwin");
-            return `<span style="font-style: italic; font-weight: bold; color: #9b59b6; font-size: 1.2em; font-family: 'Arial', sans-serif;">This guy's idea was so good, even ChatGPT had to sit down and take notes. 📝🤖🔥</span>`;
-        }
-        
-        // Special case for Jesus/Christ
-        if (lowerWord.includes('jesus') || lowerWord.includes('christ')) {
-            console.log("Special case detected: Jesus/Christ");
-            return `<span style="font-style: italic; font-weight: bold; color: #e74c3c; font-size: 1.2em; font-family: 'Georgia', serif;">My Lord, My God, My Savior!! All Glory to God in the highest!!! 🙌</span>`;
-        }
-
-        try {
-            const cleanWord = word.split(/\s+/)[0].toLowerCase().replace(/[^a-z]/g, '');
-            if (!cleanWord) {
-                console.log(`Cleaned word is empty for input: "${word}"`);
-                return "Maybe try entering... you know... actual letters? 😉";
-            }
-            console.log(`Cleaned word for API call: "${cleanWord}"`);
-
-            const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${cleanWord}`);
-            console.log(`Dictionary API response status for "${cleanWord}": ${response.status}`);
-
-            // --- CASE 1: API Responded, but Word Not Found (or other API error) ---
-            if (!response.ok) {
-                const wordNotFoundResponses = [
-                    `"${word}"? I looked everywhere but couldn't find this word! 🕵️‍♂️`,
-                    `Ah! Do you speak the language of the ancients? "${word}" is a mystery to me! 🧙‍♂️`,
-                    `Hmm, "${word}" sounds made up. But then again, aren't all words? 🤔`,
-                    `I tried asking my dictionary friends about "${word}", but they just laughed! 📚`,
-                    `"${word}" - Is that from a sci-fi novel or did you just sneeze? 🤧`,
-                    `My dictionary threw a 404 error page at me for "${word}". Rude! 📄`,
-                    `Is "${word}" even legal in Scrabble? Doesn't look like it's in my dictionary!`
-                ];
-                console.warn(`Dictionary API non-OK response for "${cleanWord}": ${response.status}.`);
-                return wordNotFoundResponses[Math.floor(Math.random() * wordNotFoundResponses.length)];
-            }
-
-            // --- CASE 2: API Responded Successfully (status 2xx) ---
-            const data = await response.json();
-            const meanings = data[0]?.meanings;
-
-            if (meanings && meanings.length > 0 && meanings[0].definitions && meanings[0].definitions.length > 0) {
-                const partOfSpeech = meanings[0].partOfSpeech || 'unknown';
-                const definition = meanings[0].definitions[0].definition;
-                console.log(`Successfully found definition for "${cleanWord}"`);
-                return `<strong>${cleanWord}</strong> <em>(${partOfSpeech})</em>: ${definition}`;
-            } else {
-                console.warn(`Found "${cleanWord}" but structure missing meanings/definitions. Data:`, data);
-                const weirdDataResponses = [
-                    `Found "${cleanWord}" but the definition seems to have wandered off... 🚶‍♂️`,
-                    `The entry for "${cleanWord}" exists, but it's written in invisible ink! ✨`,
-                    `"${cleanWord}" is in the dictionary, but the definition is playing hide-and-seek! 🙈`
-                ];
-                return weirdDataResponses[Math.floor(Math.random() * weirdDataResponses.length)];
-            }
-        } catch (error) {
-            console.error(`General error in getDefinition for "${word}":`, error);
-            const connectionErrorResponses = [
-                `Is the dictionary API napping? 😴 Couldn't get a definition for "${word}".`,
-                `My wires must be crossed! ⚡️ Failed to look up "${word}". Try again?`,
-                `The definition gnomes are on strike! ✊ Couldn't fetch "${word}".`,
-                `Uh oh, hit some turbulence trying to fetch "${word}". ✈️ Maybe try again later?`,
-                `The dictionary server might be lost in translation... 🌐 Error fetching "${word}".`,
-                `Whoops! Dropped the dictionary while looking up "${word}". 📚 Try again!`,
-                `Static electricity? Gremlins? 👾 Couldn't connect to fetch "${word}".`,
-                `Does the internet exist right now? 🤔 Couldn't reach the dictionary for "${word}".`
-            ];
-            return connectionErrorResponses[Math.floor(Math.random() * connectionErrorResponses.length)];
-        }
-    }
+    // --- REMOVED: Client-side dictionary API function --- 
+    // getDefinition() function has been removed and moved to server-side
 
     // --- Random word button handler ---
     randomButton.addEventListener('click', async () => {

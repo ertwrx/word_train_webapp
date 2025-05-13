@@ -11,7 +11,8 @@ import logging
 from config import config
 import click
 from app.dictionary_service import get_definition, generate_random_word
-
+from api_routes import api
+app.register_blueprint(api)
 
 # Initialize Flask application
 app = Flask(
