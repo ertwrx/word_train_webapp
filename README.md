@@ -94,6 +94,9 @@ gunicorn -w 3 --threads 2 --worker-class sync --timeout 30 -b 0.0.0.0:5000 wsgi:
 
 ### 🐳 Run with Docker
 ```bash
+
+cd deployments/docker
+
 # Build the image
 docker build -t word-train-webapp .
 
