@@ -535,3 +535,168 @@ body.dark-mode .output {
 html, body {
   overflow: hidden !important;
 }
+
+/* GitHub Footer Styles */
+.github-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.9em;
+    z-index: 99; /* Below definition container */
+    box-sizing: border-box;
+}
+
+.github-footer a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.github-footer a:hover {
+    color: #5dade2;
+    text-decoration: underline;
+}
+
+/* Adjust definition container to sit above footer */
+.definition-container {
+    bottom: 40px; /* Height of footer + some spacing */
+}
+
+/* Adjust body padding to account for both footer and definition */
+body {
+    padding-bottom: 100px; /* Space for both footer and definition */
+}
+
+/* ===== MOBILE RESPONSIVE STYLES ===== */
+
+/* Viewport meta tag should be in <head> - see note below */
+
+@media screen and (max-width: 768px) {
+    /* Make title smaller on mobile */
+    #site-title {
+        font-size: 1.5em;
+        padding: 10px;
+    }
+
+    /* Stack form controls vertically */
+    .form-controls {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    /* Make input full width */
+    .form-controls input[type="text"] {
+        width: 100%;
+        font-size: 16px; /* Prevents zoom on iOS */
+        box-sizing: border-box;
+    }
+
+    /* Make select and range inputs full width */
+    .engine-group, .speed-control {
+        width: 100%;
+    }
+
+    .engine-group select,
+    .speed-control input[type="range"] {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Stack buttons vertically on mobile */
+    .button-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 10px;
+    }
+
+    .button-group button {
+        width: 100%;
+        font-size: 16px;
+    }
+
+    /* Make train cars smaller on mobile */
+    .train-car {
+        min-width: 40px;
+        height: 40px;
+        font-size: 1.2em;
+    }
+
+    .engine-emoji {
+        font-size: 2em;
+    }
+
+    /* Scale down wheels */
+    .wheel {
+        width: 20px;
+        height: 20px;
+    }
+
+    /* Adjust challenge text */
+    .challenge {
+        font-size: 0.9em;
+        padding: 8px;
+    }
+
+    /* Make definition text smaller */
+    .definition-container {
+        font-size: 0.8em;
+        padding: 8px;
+        bottom: 35px; /* Adjust for smaller footer */
+    }
+
+    /* Make footer smaller on mobile */
+    .github-footer {
+        font-size: 0.75em;
+        padding: 8px;
+    }
+
+    /* Reduce body padding on mobile */
+    body {
+        padding-bottom: 90px;
+    }
+
+    /* Make dark mode toggle easier to tap */
+    #dark-mode-toggle {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5em;
+    }
+}
+
+/* Extra small devices (phones in portrait, less than 400px) */
+@media screen and (max-width: 400px) {
+    #site-title {
+        font-size: 1.2em;
+    }
+
+    .train-car {
+        min-width: 35px;
+        height: 35px;
+        font-size: 1em;
+    }
+
+    .definition-container {
+        font-size: 0.75em;
+    }
+}
+
+/* Dark mode adjustments for footer */
+body.dark-mode .github-footer {
+    background-color: #1a1a1a;
+    color: #ecf0f1;
+}
+
+body.dark-mode .github-footer a {
+    color: #5dade2;
+}
+
+body.dark-mode .github-footer a:hover {
+    color: #85c1e9;
+}
