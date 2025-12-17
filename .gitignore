@@ -1,6 +1,7 @@
 # Backup scripts
 bac
 restorbac
+backup.sh
 
 # Bytecode and cache
 __pycache__/
@@ -12,6 +13,7 @@ __pycache__/
 *.bak
 *.tmp
 *~
+backup/
 
 # Python packaging
 .Python

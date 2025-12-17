@@ -55,4 +55,4 @@ USER appuser
 EXPOSE 5000
 
 # Run the application
-CMD ["gunicorn", "-c", "gunicorn.conf.py", "wsgi:app"]
+CMD gunicorn --bind 0.0.0.0:$FLASK_PORT app.main:app

@@ -375,18 +375,18 @@ button.generate-style:active {
 
 /* Definition Container */
 .definition-container {
-    position: fixed;
-    bottom: 0;
-    left: 0;
+    position: relative; /* Change from fixed to relative on mobile */
     width: 100%;
     box-sizing: border-box;
-    padding: 5px 15px;
+    padding: 10px 15px;
     background-color: #f0f0f0;
     border-top: 3px solid #3498db;
+    border-radius: 8px;
     font-style: italic;
     font-size: 0.9em;
-    z-index: 100;
     text-align: center;
+    margin-top: 15px; /* Space below the rails */
+    margin-bottom: 50px; /* Space for footer */
 }
 
 /* Previous CSS remains the same until the engine selector section */
@@ -539,22 +539,26 @@ html, body {
 /* GitHub Footer Styles */
 .github-footer {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    text-align: center;
-    padding: 10px;
-    font-size: 0.9em;
-    z-index: 99; /* Below definition container */
+    bottom: 10px;
+    right: 15px;
+    background-color: transparent; /* No background */
+    color: #7f8c8d; /* Subtle gray text */
+    text-align: right;
+    padding: 0;
+    font-size: 0.85em;
+    z-index: 101; /* Above definition container */
     box-sizing: border-box;
+}
+
+.github-footer p {
+    margin: 0;
+    padding: 0;
 }
 
 .github-footer a {
     color: #3498db;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: normal;
     transition: color 0.3s ease;
 }
 
@@ -563,25 +567,63 @@ html, body {
     text-decoration: underline;
 }
 
-/* Adjust definition container to sit above footer */
-.definition-container {
-    bottom: 40px; /* Height of footer + some spacing */
+/* Dark mode adjustments for footer */
+body.dark-mode .github-footer {
+    color: #95a5a6; /* Lighter gray for dark mode */
 }
 
-/* Adjust body padding to account for both footer and definition */
-body {
-    padding-bottom: 100px; /* Space for both footer and definition */
+body.dark-mode .github-footer a {
+    color: #5dade2;
 }
+
+body.dark-mode .github-footer a:hover {
+    color: #85c1e9;
+}
+
+/* Desktop view - keep it fixed at bottom */
+@media screen and (min-width: 769px) {
+    .definition-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        border-radius: 0;
+        z-index: 100;
+    }
+    
+    body {
+        padding-bottom: 50px;
+    }
+}
+
+/* Desktop view - keep it fixed at bottom */
+@media screen and (min-width: 769px) {
+    .definition-container {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+        border-radius: 0;
+        z-index: 100;
+    }
+    
+    body {
+        padding-bottom: 50px;
+    }
+}
+
+
 
 /* ===== MOBILE RESPONSIVE STYLES ===== */
-
-/* Viewport meta tag should be in <head> - see note below */
 
 @media screen and (max-width: 768px) {
     /* Make title smaller on mobile */
     #site-title {
         font-size: 1.5em;
         padding: 10px;
+        margin-bottom: 10px;
     }
 
     /* Stack form controls vertically */
@@ -621,52 +663,105 @@ body {
         font-size: 16px;
     }
 
-    /* Make train cars smaller on mobile */
-    .train-car {
-        min-width: 40px;
-        height: 40px;
-        font-size: 1.2em;
-    }
-
-    .engine-emoji {
-        font-size: 2em;
-    }
-
-    /* Scale down wheels */
-    .wheel {
-        width: 20px;
-        height: 20px;
-    }
-
     /* Adjust challenge text */
     .challenge {
         font-size: 0.9em;
         padding: 8px;
+        margin: 10px 0;
     }
 
-    /* Make definition text smaller */
+    /* TRAIN VISIBILITY FIXES */
+    .train-block {
+        margin: 15px 0;
+        overflow-x: auto; /* Allow horizontal scrolling if needed */
+        overflow-y: visible;
+    }
+
+    .train-container {
+        min-width: 100%;
+        overflow-x: auto;
+    }
+
+    .train-with-wheels {
+        display: flex;
+        align-items: center;
+        gap: 3px; /* Reduce gap between cars */
+        padding: 10px 5px;
+    }
+
+    /* Make train cars smaller but visible on mobile */
+    .train-car {
+        min-width: 35px;
+        max-width: 35px;
+        height: 35px;
+        font-size: 1em;
+        flex-shrink: 0;
+    }
+
+    .train-letter {
+        font-size: 1em;
+    }
+
+    .engine-emoji {
+        font-size: 1.8em;
+        flex-shrink: 0;
+    }
+
+    /* Scale down wheels */
+    .wheel {
+        width: 18px;
+        height: 18px;
+    }
+
+    .window {
+        width: 15px;
+        height: 10px;
+    }
+
+    /* Make output area scrollable if trains are too long */
+    #train-output-area {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .output {
+        padding: 10px 5px;
+    }
+
+/* Mobile view - flows with content under trains */
+@media screen and (max-width: 768px) {
     .definition-container {
-        font-size: 0.8em;
-        padding: 8px;
-        bottom: 35px; /* Adjust for smaller footer */
+        position: relative; /* Flows with page content */
+        font-size: 0.85em;
+        padding: 12px 10px;
+        margin: 15px 10px 60px 10px; /* Top, right, bottom, left */
     }
-
-    /* Make footer smaller on mobile */
+    
+    /* Footer stays at bottom-right */
     .github-footer {
-        font-size: 0.75em;
-        padding: 8px;
+        position: fixed;
+        bottom: 8px;
+        right: 10px;
+        font-size: 0.7em;
+        z-index: 102;
     }
-
-    /* Reduce body padding on mobile */
+    
+    /* No extra padding needed since definition flows with content */
     body {
-        padding-bottom: 90px;
+        padding-bottom: 40px; /* Just for footer */
     }
+}
 
     /* Make dark mode toggle easier to tap */
     #dark-mode-toggle {
-        width: 50px;
-        height: 50px;
-        font-size: 1.5em;
+        width: 45px;
+        height: 45px;
+        font-size: 1.3em;
+    }
+
+    /* Rails adjustment */
+    .rails {
+        margin-top: 5px;
     }
 }
 
@@ -677,26 +772,53 @@ body {
     }
 
     .train-car {
-        min-width: 35px;
-        height: 35px;
-        font-size: 1em;
+        min-width: 32px;
+        max-width: 32px;
+        height: 32px;
+        font-size: 0.9em;
     }
 
+    .engine-emoji {
+        font-size: 1.6em;
+    }
+
+/* Mobile view - flows with content under trains */
+@media screen and (max-width: 768px) {
     .definition-container {
-        font-size: 0.75em;
+        position: relative; /* Flows with page content */
+        font-size: 0.85em;
+        padding: 12px 10px;
+        margin: 15px 10px 60px 10px; /* Top, right, bottom, left */
+    }
+    
+    /* Footer stays at bottom-right */
+    .github-footer {
+        position: fixed;
+        bottom: 8px;
+        right: 10px;
+        font-size: 0.7em;
+        z-index: 102;
+    }
+    
+    /* No extra padding needed since definition flows with content */
+    body {
+        padding-bottom: 40px; /* Just for footer */
+    }
+}
+    body {
+        padding-bottom: 70px;
     }
 }
 
-/* Dark mode adjustments for footer */
-body.dark-mode .github-footer {
-    background-color: #1a1a1a;
-    color: #ecf0f1;
-}
-
-body.dark-mode .github-footer a {
-    color: #5dade2;
-}
-
-body.dark-mode .github-footer a:hover {
-    color: #85c1e9;
+/* Landscape mode on mobile */
+@media screen and (max-width: 768px) and (orientation: landscape) {
+    .train-car {
+        min-width: 30px;
+        max-width: 30px;
+        height: 30px;
+    }
+    
+    .engine-emoji {
+        font-size: 1.5em;
+    }
 }
