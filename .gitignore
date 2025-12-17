@@ -86,3 +86,5 @@ htmlcov/
 # K8s secrets & screenshots
 k8s/secret.yaml
 screenshot.png
+
+tests/
