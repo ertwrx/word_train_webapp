@@ -6,6 +6,10 @@
 [![Flask](https://img.shields.io/badge/Flask-Web_App-red?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Gunicorn](https://img.shields.io/badge/Gunicorn-WSGI_Server-green?logo=gunicorn&logoColor=white)](https://gunicorn.org/)
 [![Docker Compose](https://img.shields.io/badge/Docker_Compose-Ready-informational?logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-blue?logo=kubernetes)](docs/README-k8s.md)
+[![CI/CD](https://img.shields.io/badge/CI%2FCD-GitHub_Actions-success?logo=github-actions)](.github/workflows/CI_Pipeline.yml)
+[![APIs](https://img.shields.io/badge/API-Integration-orange?logo=fastapi)](app/api_routes.py)
+[![HA](https://img.shields.io/badge/High_Availability-3%2B_Replicas-green)](deployments/k8s/deployment.yaml)
 [![Environment Config](https://img.shields.io/badge/Environment-Config-success?logo=dotenv&logoColor=white)](https://pypi.org/project/python-dotenv/)
 [![MIT License](https://img.shields.io/badge/License-MIT-lightgrey?logo=opensourceinitiative&logoColor=white)](LICENSE)
 
