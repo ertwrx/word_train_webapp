@@ -2,6 +2,7 @@
 bac
 restorbac
 backup.sh
+restore.sh
 
 # Bytecode and cache
 __pycache__/
